@@ -5,9 +5,13 @@
     <script src="/socket.io/socket.io.js"></script>
     <link rel='stylesheet' href='/stylesheets/style.css'/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="/javascripts/index.js"></script>
     <script src="/javascripts/canvas.js"></script>
+    <script src="/javascripts/idb/index.js"  type="module"></script>
+
+    <script src="/javascripts/database.js" type="module"></script>
+    <script src="/javascripts/index.js"></script>
 </head>
+
 <body onload="init()">
 <div id="initial_form" style="display: block">
     <h1><%= title %></h1>
@@ -15,6 +19,9 @@
     <form onsubmit="return false;">
         <p><label for="name"> Your name </label>
             <input type="text" id="name" name="name">
+        </p>
+        <p>
+            <label id="commentErr"></label>
         </p>
         <p>
             <label for="roomNo"> Your room </label>

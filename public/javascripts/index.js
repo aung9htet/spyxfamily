@@ -2,7 +2,6 @@ let name = null;
 let roomNo = null;
 let chat= io.connect('/chat');
 
-
 /**
  * called by <body onload>
  * it initialises the interface and the expected socket messages
@@ -12,26 +11,40 @@ function init() {
     // it sets up the interface so that userId and room are selected
     document.getElementById('initial_form').style.display = 'block';
     document.getElementById('chat_interface').style.display = 'none';
-
     //initialise chat socket
     initChatSocket()
 }
 
+function loadData() {
+    const curr_usr = name
+    let cachedData = getChatData(roomNo);
+    if (cachedData && cachedData.length>0) {
+        for (let text of cachedData)
+            name = text.name;
+            const msg = text.msg;
+            chat.emit('chat', roomNo, name, msg);
+        name = curr_usr;
+    }
+}
 /**
- * called to generate a random room number
- * This is a simplification. A real world implementation would ask the server to generate a unique room number
- * so to make sure that the room number is not accidentally repeated across uses
+ * called to generate a random room number with 10 alphanumeric letters
  */
 function generateRoom() {
-    roomNo = Math.round(Math.random() * 10000);
-    document.getElementById('roomNo').value = 'R' + roomNo;
+    roomNo = (Math.random() * 1000000000000000000).toString(36).substring(0,10);
+    document.getElementById('roomNo').value = roomNo;
 }
 
 /**
  * initialises the socket for /chat
  */
-
 function initChatSocket(){
+    /** initialise the database */
+    if ('indexedDB' in window) {
+        initDatabase()
+    }
+    else {
+        console.log('This browser doesn\'t support IndexedDB');
+    }
     chat.on('joined', function(room, userId) {
         if (userId === name) {
             hideLoginInterface((room, userId))
@@ -41,8 +54,11 @@ function initChatSocket(){
     });
     chat.on('chat', function (room, userId, chatText) {
         let who = userId
-        if (userId === name) who = 'Me';
+        if (userId === name) who = 'Me'
         writeOnChatHistory('<b>' + who + ':</b> ' + chatText);
+    });
+    chat.on('rewrite', function (room, userId, chatText) {
+        writeOnChatHistory('<b>' + userId + ':</b> ' + chatText);
     });
 }
 
@@ -54,17 +70,46 @@ function sendChatText() {
     let chatText = document.getElementById('chat_input').value;
     // @todo send the chat message
     chat.emit('chat', roomNo, name, chatText);
+    storeChatData(roomNo, {name: name, msg: chatText})
+        .then(response => console.log('inserting data worked!!'))
+        .catch(error => console.log('error inserting: ' + + JSON.stringify(error)))
+}
+/**
+ * check if room id is in correct format
+ */
+function checkRoomId(roomId) {
+    if (roomId.length == 10) {
+        for (const c of roomId) {
+            if (c >= '0' && c <= '9') {
+                continue
+            } else if (c.toUpperCase() != c && c.toLowerCase() == c) {
+                continue
+            } else {
+                return false
+            }
+        }
+    }
+    else {
+        return false
+    }
+    return true
 }
 
 /**
- * used to connect to a room. It gets the user name and room number from the
+ * used to connect to a room. It gets the name and room id from the
  * interface
  */
 function connectToRoom() {
     roomNo = document.getElementById('roomNo').value;
     name = document.getElementById('name').value;
     if (!name) name = 'Unknown-' + Math.random();
-    chat.emit('create or join', roomNo, name);
+    //check if room id is in correct format
+    if (checkRoomId(roomNo) == true) {
+        chat.emit('create or join', roomNo, name);
+        loadData(roomNo);
+    } else {
+        document.getElementById('commentErr').innerHTML = 'Room ID should have 10 lowercase alphanumeric characters';
+    }
 }
 
 /**
