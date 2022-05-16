@@ -15,15 +15,28 @@ function init() {
     initChatSocket()
 }
 
-function loadData() {
-    const curr_usr = name
-    let cachedData = getChatData(roomNo);
-    if (cachedData && cachedData.length>0) {
-        for (let text of cachedData)
-            name = text.name;
-            const msg = text.msg;
-            chat.emit('chat', roomNo, name, msg);
-        name = curr_usr;
+/**
+ *
+ * @param chatDetails details contained in the chat
+ * will write the chat messages locally for the user
+ */
+function writeLoadedData(chatDetails){
+    const curr_usr = name;
+    name = chatDetails.name;
+    const msg = chatDetails.msg;
+    writeOnChatHistory('<b>' + name + ':</b> ' +  msg);
+    name = curr_usr
+}
+
+/**
+ * to rewrite for loaded data
+ */
+async function loadData(roomNo, forceReload) {
+    // get chat data by name and currently set room id
+    let chatData = await getChatData(roomNo)
+    if (!forceReload && chatData && chatData.length > 0) {
+        for (let chat of chatData)
+            writeLoadedData(chat)
     }
 }
 /**
@@ -47,18 +60,21 @@ function initChatSocket(){
     }
     chat.on('joined', function(room, userId) {
         if (userId === name) {
-            hideLoginInterface((room, userId))
+            hideLoginInterface(room, userId)
+            console.log('loading data')
+            loadData(roomNo, false)
         } else {
-            writeOnChatHistory('<b>' + userId + '</b>' + 'joined room ' + room);
+            writeOnChatHistory('<b>' + userId + '</b> ' + 'joined room ' + room);
         }
     });
     chat.on('chat', function (room, userId, chatText) {
         let who = userId
+        // store data for both those who received or send
+        storeChatData(roomNo, {roomId: room, name: name, msg: chatText})
+            .then(response => console.log('inserting data worked!!'))
+            .catch(error => console.log('error inserting: ' + + JSON.stringify(error)))
         if (userId === name) who = 'Me'
         writeOnChatHistory('<b>' + who + ':</b> ' + chatText);
-    });
-    chat.on('rewrite', function (room, userId, chatText) {
-        writeOnChatHistory('<b>' + userId + ':</b> ' + chatText);
     });
 }
 
@@ -70,10 +86,8 @@ function sendChatText() {
     let chatText = document.getElementById('chat_input').value;
     // @todo send the chat message
     chat.emit('chat', roomNo, name, chatText);
-    storeChatData(roomNo, {name: name, msg: chatText})
-        .then(response => console.log('inserting data worked!!'))
-        .catch(error => console.log('error inserting: ' + + JSON.stringify(error)))
 }
+
 /**
  * check if room id is in correct format
  */
@@ -106,7 +120,6 @@ function connectToRoom() {
     //check if room id is in correct format
     if (checkRoomId(roomNo) == true) {
         chat.emit('create or join', roomNo, name);
-        loadData(roomNo);
     } else {
         document.getElementById('commentErr').innerHTML = 'Room ID should have 10 lowercase alphanumeric characters';
     }
