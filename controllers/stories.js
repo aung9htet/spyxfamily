@@ -6,7 +6,7 @@ function sendAxiosQuery(url, data) {
             // we need to JSON stringify the object
             document.getElementById('results').innerHTML = JSON.stringify(dataR.data);
         })
-        .then(window.location="/")
+        .then(window.location="/index")
         .catch(function (response) {
             alert(response.toJSON());
         })

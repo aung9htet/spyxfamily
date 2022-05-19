@@ -5,7 +5,7 @@ function sendAxiosQuery(url, data) {
             document.getElementById('results').innerHTML = JSON.stringify(dataR.data);
             console.log(dataR);
         })
-        .then(window.location="/")
+        .then(window.location="/index")
         .catch(function (response) {
             return response.toJSON();
         })

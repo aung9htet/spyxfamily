@@ -10,7 +10,7 @@ var image = require('../controllers/images')
 var initDB = require('../controllers/init');
 initDB.init();
 
-router.get('/',(req,res,next) =>{
+router.get('/index',(req,res,next) =>{
   //Here fetch data using mongoose query like
   Story.find({}, function(err, stories) {
     if (err) throw err;
@@ -30,7 +30,7 @@ router.get('/insert', function(req, res, next) {
 });
 
 router.post('/insert', function(req, res, next) {
-  res.redirect("/")
+  res.redirect("/index")
   story.insert(req, res)
 
 
