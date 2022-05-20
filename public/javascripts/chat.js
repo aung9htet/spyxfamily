@@ -60,7 +60,7 @@ function initChatSocket(){
     }
     chat.on('joined', function(room, userId) {
         if (userId === name) {
-            hideLoginInterface(room, userId)
+            hideLoginInterface(room, userId, image)
             console.log('loading data')
             loadData(roomNo, false)
         } else {
@@ -116,6 +116,11 @@ function checkRoomId(roomId) {
 function connectToRoom() {
     roomNo = document.getElementById('roomNo').value;
     name = document.getElementById('name').value;
+    image = document.getElementById('myImage');
+    file = image.files[0];
+    if (file) {
+        img.src = URL.createObjectURL(file)
+    }
     if (!name) name = 'Unknown-' + Math.random();
     //check if room id is in correct format
     if (checkRoomId(roomNo) == true) {
@@ -146,10 +151,10 @@ function writeOnChatHistory(text) {
  * @param room the selected room
  * @param userId the user name
  */
-function hideLoginInterface(room, userId) {
+function hideLoginInterface(room, userId, image) {
     document.getElementById('initial_form').style.display = 'none';
     document.getElementById('chat_interface').style.display = 'block';
     document.getElementById('who_you_are').innerHTML= userId;
     document.getElementById('in_room').innerHTML= ' '+room;
+    document.getElementById('image').innerHTML = image;
 }
-

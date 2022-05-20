@@ -29,9 +29,11 @@ router.get('/insert', function(req, res, next) {
 });
 
 router.post('/insert', function(req, res, next) {
-  res.redirect("/index")
-  story.insert(req, res)
-
+  // const myPromise = new Promise((resolve, reject) => {
+  //   story.insert(req, res);
+  // });
+  // myPromise.then(res.redirect("/index"));
+  story.insert(req, res);
 
 });
 
