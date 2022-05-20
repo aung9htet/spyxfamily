@@ -25,6 +25,7 @@ let db = NaN;
 
 const CHAT_DB_NAME= 'db_chat';
 const CHAT_STORE_NAME= 'chat_storage';
+const IMG_STORE_NAME = 'image_storage';
 
 /**
  * it inits the database and creates an index for the chat field
@@ -40,6 +41,13 @@ async function initDatabase(){
                     });
                     chatDB.createIndex('roomId', 'roomId', {unique: false, multiEntry: true});
                 }
+                if (!upgradeDb.objectStoreNames.contains(IMG_STORE_NAME)) {
+                    let imageDB = upgradeDb.createObjectStore(IMG_STORE_NAME, {
+                        keyPath: 'id',
+                        autoIncrement: true
+                    });
+                    imageDB.createIndex('roomId', 'roomId', {unique: false, multiEntry: true});
+                }
             }
         });
         console.log('db created');
@@ -47,12 +55,74 @@ async function initDatabase(){
 }
 window.initDatabase= initDatabase;
 
+async function storeImageData(roomId, imageObject) {
+    if (!db)
+        await initDatabase();
+    if (db) {
+        try {
+            const tx = db.transaction(IMG_STORE_NAME, 'readwrite');
+            await Promise.all([
+                tx.store.add(imageObject),
+                tx.complete
+            ]);
+            console.log('added item to the store! ' + JSON.stringify(imageObject));
+        } catch(error) {
+            localStorage.setItem(roomId, JSON.stringify(imageObject));
+        };
+    }
+    else localStorage.setItem(roomId, JSON.stringify(imageObject));
+}
+window.storeImageData = storeImageData;
+
+async function getImageData(roomId) {
+    // check if db exists or not
+    if (!db)
+        await initDatabase();
+    if (db) {
+        // fetch database info
+        try {
+            console.log('fetching: ' + roomId);
+            let tx = await db.transaction(IMG_STORE_NAME, 'readonly');
+            let store = await tx.objectStore(IMG_STORE_NAME);
+            // set specific item to get from
+            let index = await store.index('roomId');
+            let imgList = await index.getAll(IDBKeyRange.only(roomId));
+            await tx.complete;
+            var img;
+            // processing and send chat message
+            if (imgList && imgList.length > 0) {
+                for (let elem of imgList) {
+                    img = elem;
+                }
+                return img;
+            } else {
+                // if the database is not supported, we use localstorage
+                const value = localStorage.getItem(roomId);
+                if (value == null)
+                    return img;
+                else img = value;
+                return img;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    } else {
+        const value = localStorage.getItem(roomId);
+        let img = []
+        if (value == null)
+            return img;
+        else img.push(value);
+        return img;
+    }
+}
+window.getImageData= getImageData;
 /**
  * It saves the texts for a chatroom in localStorage
  * @params roomId
  * @params chatObject = [name, text]
  */
 async function storeChatData(roomId, chatObject) {
+    console.log(chatObject);
     // check if database exists
     if (!db)
         // initialise database

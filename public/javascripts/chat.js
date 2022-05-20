@@ -34,10 +34,34 @@ function writeLoadedData(chatDetails){
 async function loadData(roomNo, forceReload) {
     // get chat data by name and currently set room id
     let chatData = await getChatData(roomNo)
+    let imageData = await getImageData(roomNo)
+    if (imageData) {
+        img.src = imageData.img;
+    }
     if (!forceReload && chatData && chatData.length > 0) {
         for (let chat of chatData)
             writeLoadedData(chat)
     }
+}
+
+function readImage(input) {
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    let imgSrc = '';
+    if (input.value !== '') {
+        imgSrc = window.URL.createObjectURL(input.files[0]);
+    }
+
+    const img = new Image();
+    img.onload = function() {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        context.drawImage(img, 0, 0);
+    }
+    img.src = imgSrc;
+
 }
 /**
  * called to generate a random room number with 10 alphanumeric letters
@@ -120,7 +144,12 @@ function connectToRoom() {
     file = image.files[0];
     if (file) {
         img.src = URL.createObjectURL(file)
+        var canvas = document.getElementById('canvas');
+        var imgBase = canvas.toDataURL();
+        storeImageData(roomNo, {roomId: roomNo, img: imgBase})
     }
+
+
     if (!name) name = 'Unknown-' + Math.random();
     //check if room id is in correct format
     if (checkRoomId(roomNo) == true) {

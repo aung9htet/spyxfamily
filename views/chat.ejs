@@ -14,6 +14,7 @@
 
 <body onload="init()">
 <div id="initial_form" style="display: block">
+    <canvas style="display:none;" id="canvas"></canvas>
     <h1><%= title %></h1>
     <p>Please insert the id of the Room you want to Join, if you do not have a room id, click Generate Room</p>
     <form enctype="multipart/form-data" onsubmit="return false;">
@@ -29,7 +30,7 @@
             <button id="roomNoGenerator" onclick="generateRoom()">Generate Room</button>
         </p>
         <p><label for='image'>Image:</label>
-            <input type="file" name="myImage" id="myImage" accept="image/png, image/jpeg">
+            <input type="file" name="myImage" id="myImage" onchange="readImage(this)" accept="image/png, image/jpeg">
         </p>
 <!--        <p style=" width: 100%"><label for="image_url"> Image (URL) </label><input type="text" id="image_url" name="image_url"></p>-->
 
