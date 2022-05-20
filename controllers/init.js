@@ -9,30 +9,29 @@ exports.init= function() {
         console.log('collection removed')
     });
 
-/*    let story = new Story({
-        short_text: 'wwddwwddw',
-        author_name: 'Brandon',
-        date_of_issue: Date.now()
-    });
-    story.save()
-        .then ((results) => {
-            console.log("object created in init: "+ JSON.stringify(results));
-        })
-        .catch ((error) => {
-            console.log(JSON.stringify(error));
+    /*    let story = new Story({
+            short_text: 'wwddwwddw',
+            author_name: 'Brandon',
+            date_of_issue: Date.now()
         });
+        story.save()
+            .then ((results) => {
+                console.log("object created in init: "+ JSON.stringify(results));
+            })
+            .catch ((error) => {
+                console.log(JSON.stringify(error));
+            });
 
-    let story2 = new Story({
-        short_text: 'wdwd',
-        author_name: 'Jim',
-        date_of_issue: Date.now()
-    });
-    story2.save()
-        .then ((results) => {
-            console.log("object created in init: "+ JSON.stringify(results));
-        })
-        .catch ((error) => {
-            console.log(JSON.stringify(error));
-        });*/
+        let story2 = new Story({
+            short_text: 'wdwd',
+            author_name: 'Jim',
+            date_of_issue: Date.now()
+        });
+        story2.save()
+            .then ((results) => {
+                console.log("object created in init: "+ JSON.stringify(results));
+            })
+            .catch ((error) => {
+                console.log(JSON.stringify(error));
+            });*/
 }
-

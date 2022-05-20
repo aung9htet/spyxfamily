@@ -1,7 +1,7 @@
 let name = null;
 let roomNo = null;
 let chat= io.connect('/chat');
-
+let online_status = true;
 /**
  * called by <body onload>
  * it initialises the interface and the expected socket messages
@@ -21,11 +21,10 @@ function init() {
  * will write the chat messages locally for the user
  */
 function writeLoadedData(chatDetails){
-    const curr_usr = name;
-    name = chatDetails.name;
     const msg = chatDetails.msg;
-    writeOnChatHistory('<b>' + name + ':</b> ' +  msg);
-    name = curr_usr
+    let loadName = chatDetails.name;
+    if (loadName === name) (loadName = "Me")
+    writeOnChatHistory('<b>' + chatDetails.name + ':</b> ' +  msg);
 }
 
 /**
@@ -34,10 +33,95 @@ function writeLoadedData(chatDetails){
 async function loadData(roomNo, forceReload) {
     // get chat data by name and currently set room id
     let chatData = await getChatData(roomNo)
+    let imageData = await getImageData(roomNo)
+    if (imageData) {
+        img.src = imageData.img;
+    }
     if (!forceReload && chatData && chatData.length > 0) {
         for (let chat of chatData)
             writeLoadedData(chat)
+    } else {
+        const input = JSON.stringify({roomId: roomNo});
+        $.ajax({
+            url: '/',
+            data: input,
+            contentType: 'application/json',
+            type: 'POST',
+            success: function (dataR) {
+                // no need to JSON parse the result, as we are using
+                // dataType:json, so JQuery knows it and unpacks the
+                // object for us before returning it
+                writeLoadedData(dataR);
+                storeChatData(dataR.roomId, dataR);
+                if (document.getElementById('offline_div') != null)
+                    document.getElementById('offline_div').style.display = 'none';
+            },
+            error: async function (xhr, status, error) {
+                showOfflineWarning();
+                let cachedData=await getChatData(roomNo);
+                if (cachedData && cachedData.length>0)
+                    writeLoadedData(cachedData[0])
+                const dvv = document.getElementById('offline_div');
+                if (dvv != null)
+                    dvv.style.display = 'block';
+            }
+        });
     }
+}
+
+function readImage(input) {
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    let imgSrc = '';
+    if (input.value !== '') {
+        imgSrc = window.URL.createObjectURL(input.files[0]);
+    }
+
+    const img = new Image();
+    img.onload = function() {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        context.drawImage(img, 0, 0);
+    }
+    img.src = imgSrc;
+
+}
+
+/**
+ * When the client gets off-line, it shows an off line warning to the user
+ * so that it is clear that the data is stale
+ */
+window.addEventListener('offline', function(e) {
+    // Queue up events for server.
+    console.log("You are offline");
+    showOfflineWarning();
+    online_status = false;
+    document.getElementById('input').style.display = 'none';
+}, false);
+
+/**
+ * When the client gets off-line, it shows an off line warning to the user
+ * so that it is clear that the data is stale
+ */
+window.addEventListener('online', function(e) {
+    // Queue up events for server.
+    console.log("You are online");
+    hideOfflineWarning();
+    online_status = true;
+    document.getElementById('input').style.display = 'block';
+}, false);
+
+function showOfflineWarning(){
+    if (document.getElementById('offline_div')!=null)
+        document.getElementById('offline_div').style.display='block';
+
+}
+
+function hideOfflineWarning(){
+    if (document.getElementById('offline_div')!=null)
+        document.getElementById('offline_div').style.display='none';
 }
 /**
  * called to generate a random room number with 10 alphanumeric letters
@@ -58,24 +142,26 @@ function initChatSocket(){
     else {
         console.log('This browser doesn\'t support IndexedDB');
     }
-    chat.on('joined', function(room, userId) {
-        if (userId === name) {
-            hideLoginInterface(room, userId)
-            console.log('loading data')
-            loadData(roomNo, false)
-        } else {
-            writeOnChatHistory('<b>' + userId + '</b> ' + 'joined room ' + room);
-        }
-    });
-    chat.on('chat', function (room, userId, chatText) {
-        let who = userId
-        // store data for both those who received or send
-        storeChatData(roomNo, {roomId: room, name: name, msg: chatText})
-            .then(response => console.log('inserting data worked!!'))
-            .catch(error => console.log('error inserting: ' + + JSON.stringify(error)))
-        if (userId === name) who = 'Me'
-        writeOnChatHistory('<b>' + who + ':</b> ' + chatText);
-    });
+    if (online_status == true) {
+        chat.on('joined', function (room, userId) {
+            if (userId === name) {
+                hideLoginInterface(room, userId)
+                console.log('loading data')
+                loadData(roomNo, false).then(response => console.log("Successfully loaded data"))
+            } else {
+                writeOnChatHistory('<b>' + userId + '</b> ' + 'joined room ' + room);
+            }
+        });
+        chat.on('chat', function (room, userId, chatText) {
+            let who = userId
+            // store data for both those who received or send
+            storeChatData(roomNo, {roomId: room, name: name, msg: chatText})
+                .then(response => console.log('inserting data worked!!'))
+                .catch(error => console.log('error inserting: ' + +JSON.stringify(error)))
+            if (userId === name) who = 'Me'
+            writeOnChatHistory('<b>' + who + ':</b> ' + chatText);
+        });
+    }
 }
 
 /**
@@ -116,12 +202,25 @@ function checkRoomId(roomId) {
 function connectToRoom() {
     roomNo = document.getElementById('roomNo').value;
     name = document.getElementById('name').value;
-    if (!name) name = 'Unknown-' + Math.random();
-    //check if room id is in correct format
-    if (checkRoomId(roomNo) == true) {
-        chat.emit('create or join', roomNo, name);
+    image = document.getElementById('myImage');
+    file = image.files[0];
+    if (online_status == true){
+        if (file) {
+            img.src = URL.createObjectURL(file)
+            var canvas = document.getElementById('canvas');
+            var imgBase = canvas.toDataURL();
+            storeImageData(roomNo, {roomId: roomNo, img: imgBase})
+        }
+        if (!name) name = 'Unknown-' + Math.random();
+        //check if room id is in correct format
+        if (checkRoomId(roomNo) == true) {
+            chat.emit('create or join', roomNo, name);
+        } else {
+            document.getElementById('commentErr').innerHTML = 'Room ID should have 10 lowercase alphanumeric characters';
+        }
     } else {
-        document.getElementById('commentErr').innerHTML = 'Room ID should have 10 lowercase alphanumeric characters';
+        hideLoginInterface(name, roomNo)
+        loadData(roomNo, false).then(response => console.log("Successfully loaded local data"))
     }
 }
 
@@ -140,7 +239,6 @@ function writeOnChatHistory(text) {
     history.scrollTop = history.scrollHeight;
     document.getElementById('chat_input').value = '';
 }
-
 /**
  * it hides the initial form and shows the chat
  * @param room the selected room
@@ -151,5 +249,5 @@ function hideLoginInterface(room, userId) {
     document.getElementById('chat_interface').style.display = 'block';
     document.getElementById('who_you_are').innerHTML= userId;
     document.getElementById('in_room').innerHTML= ' '+room;
+    document.getElementById('image').innerHTML = image;
 }
-

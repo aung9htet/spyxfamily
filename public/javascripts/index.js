@@ -1,3 +1,25 @@
+function init() {
+    if ('indexedDB' in window) {
+        initStoryDatabase()
+            .then(response => console.log("Database initialised"))
+    }
+    else {
+        console.log('This browser doesn\'t support IndexedDB')
+    }
+    // initialise for service workers
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function(){
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(function(registration) {
+                    // registration successful
+                    console.log('Service Worker Registered', registration.scope);
+                }, function(err){
+                    // registration failed
+                    console.log('Service Worker Registration failed: ', err);
+                });
+        });}
+}
+
 function sendAxiosQuery(url, data) {
     axios.post(url, data)
         .then((dataR) => {// no need to JSON parse the result, as we are using
@@ -56,6 +78,13 @@ function onSubmit(route) {
     for (index in formArray) {
         data[formArray[index].name] = formArray[index].value;
     }
+    var title = formArray[0];
+    var short_text = formArray[1];
+    var author_name = formArray[2];
+    var date_of_issue = formArray[3];
+    storeStoryData(title, {title: title, shorttext: short_text, authorname: author_name, dateofissue: date_of_issue})
+        .then(response => console.log('inserting data worked!!'))
+        .catch(error => console.log('error inserting: ' + + JSON.stringify(error)))
     data.image = imgBase;
     console.log(data);
     // const data = JSON.stringify($(this).serializeArray());
