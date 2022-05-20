@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <style>
+        .my-message {
+            bottom: 100%;
+            left: 30px;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+            border-bottom-color: #efefef;
+            border-width: 10px;
+            margin-left: -10px
+        }
+        canvas{
+            width: 100%;
+        }
+    </style>
+
+</head>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <ul class="navbar-nav">
+        <li class="nav-item active">
+            <a class="nav-link" href="#">Alexander Li Wang</a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="#">Main</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="insert">Create Story</a>
+        </li>
+    </ul>
+</nav>
+<body onload="init()" class="bg-light">
+<div id="initial_form" style="display: block">
+        <div class="container mt-5">
+            <h1 class="text-center text-body display-1"><%= title %></h1>
+            <p class="text-center">Please insert the id of the Room you want to Join, if you do not have a room id, click Generate Room</p>
+        </div>
+        <div class="container mt-5 d-flex justify-content-md-center">
+            <div class="card shadow">
+                <div class="card-body m-5">
+                    <form onsubmit="return false;">
+                        <p><label for="name"> Your name </label></p>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Name">
+                        </div>
+                        <p><label id="commentErr"></label></p>
+                        <p><label for="roomNo"> Your room </label></p>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="roomNo" name="roomNo" placeholder="Room number">
+                            <div class="input-group-append">
+                            <button id="roomNoGenerator" class="btn btn-primary" onclick="generateRoom()">Generate Room</button>
+                            </div>
+                        </div>
+                        <p><label></label></p>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                            <label for="image_url" class="input-group-text"> Image (URL) </label>
+                            </div>
+                            <input type="text" class="form-control" id="image_url" name="image_url" placeholder="Type URL here">
+                        </div>
+                        <p class="text-center"><button id="connect" class="btn btn-primary" onclick="connectToRoom()">Connect</button></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid pt-5 pl-5 pr-5" id="container_interface" style="display:none">
+        <div class="row">
+        <div class="col-8 col-md-8" id="canvas_interface" style="display:none" >
+            <div class="card" id="canvas_col">
+                <img id="my_image" style="display:none; max-width: 100%; height: auto;" src="/images/cathedral.jpg">
+                <canvas id="my_canvas"></canvas>
+                <div class="controls">
+                    <div class="controls__range">
+                        <input type="range" id="jsRange"
+                               min="0.1" max="5.0" value="2.5" step="0.1"/>
+                    </div>
+                    <div class="controls__colors" id="jsColors">
+                        <div class="controls__color jsColor"
+                             style="background-color: black;"></div>
+                        <div class="controls__color jsColor"
+                             style="background-color: white;"></div>
+                        <div class="controls__color jsColor"
+                             style="background-color: red;"></div>
+                        <div class="controls__color jsColor"
+                             style="background-color: orange;"></div>
+                        <div class="controls__color jsColor"
+                             style="background-color: yellow;"></div>
+                        <div class="controls__color jsColor"
+                             style="background-color: green;"></div>
+                        <div class="controls__color jsColor"
+                             style="background-color: blue;"></div>
+                        <div class="controls__color jsColor"
+                             style="background-color: navy;"></div>
+                        <div class="controls__color jsColor"
+                             style="background-color: purple;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4 col-md-4" >
+            <div class="card" >
+            <div id="chat_interface" class="card-body" style="display: none" >
+                <div class="text-center">
+                <h3 class=""><div id="who_you_are" style="display: inline" style="height: 10vh"></div>,</h3>
+                    <h5>
+                    you are in room: <div id="in_room" style="display: inline"></div>
+                </h5>
+                </div>
+            <!--    </div>-->
+                <div id="history" style="height: 35vh" class="boxed scrolling" ></div>
+                <div id="input" style="height: 5vh" class=" boxed message" class="my-message">
+                </div>
+                <form onsubmit="return false;" style="width: 100%">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                        <label class="input-group-text" for="name"> chat: </label>
+                        </div>
+                        <input type="text" class="form-control" id="chat_input" name="chat_input" style="width: 80%">
+                        <div class="input-group-append">
+                        <button class="btn btn-primary" id="chat_send" onclick="sendChatText()">Send</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="/javascripts/paint.js"></script>
+<script src="/javascripts/bootstrap.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/javascripts/canvas.js"></script>
+<script src="/javascripts/idb/index.js"  type="module"></script>
+<script src="/javascripts/database.js" type="module"></script>
+<script src="/javascripts/chat.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title><%= title %></title>
+    <!-- <link rel='stylesheet' href='/stylesheets/style.css' /> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="/javascripts/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+
+</head>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <ul class="navbar-nav">
+        <li class="nav-item active">
+            <a class="nav-link" href="#">Alexander Li Wang</a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="index">Main</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="insert">Create Story</a>
+        </li>
+    </ul>
+</nav>
+
+<body class="bg-light">
+<div class="container mt-5">
+    <h1 class="text-center text-body display-1">Start new chat!</h1>
+</div>
+<canvas style="display:none;" id="canvas"></canvas>
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-body">
+            <form id=“xForm" class = "form-group " enctype="multipart/form-data" onsubmit="onSubmit('/insert')">
+                <p><label for='title'>Title:</label>
+                    <input type="text" class="form-control" name="title" id="title" value="Mouse">
+                </p>
+                <label for='shorttext'>Short Text:</label>
+                <input type="text" class="form-control" name="shorttext" id="shorttext" value="Mickey">
+                <p><label for='authorname'>Author Name:</label>
+                    <input type="text" class="form-control" name="authorname" id="authorname" value="Mouse">
+                </p>
+                <p><label for='dateofissue'>Date of Issue:</label>
+                    <input type="date" class="form-control" name="dateofissue" id="dateofissue">
+                </p>
+                <p><label for='image'>Image:</label>
+                    <input type="file" class="form-control-file custom-file " name="myImage" id="myImage" accept="image/png, image/jpeg" onchange="readImage(this)">
+                </p>
+                <div class="row">
+                    <div class="col text-center">
+                        <p><input type="submit" class="btn btn-primary btn-block" name="g" value="Submit" id="g"></p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="results" style="margin-top:30px"></div>
+    </div>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="/javascripts/bootstrap.js"></script>
+
+</body>
+</html>
+
