@@ -123,6 +123,7 @@ function hideOfflineWarning(){
     if (document.getElementById('offline_div')!=null)
         document.getElementById('offline_div').style.display='none';
 }
+
 /**
  * called to generate a random room number with 10 alphanumeric letters
  */
@@ -142,6 +143,7 @@ function initChatSocket(){
     else {
         console.log('This browser doesn\'t support IndexedDB');
     }
+
     if (online_status == true) {
         chat.on('joined', function (room, userId) {
             if (userId === name) {
@@ -244,7 +246,7 @@ function writeOnChatHistory(text) {
  * @param room the selected room
  * @param userId the user name
  */
-function hideLoginInterface(room, userId) {
+function hideLoginInterface(room, userId, image) {
     document.getElementById('initial_form').style.display = 'none';
     document.getElementById('chat_interface').style.display = 'block';
     document.getElementById('who_you_are').innerHTML= userId;
