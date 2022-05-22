@@ -92,3 +92,9 @@ function onSubmit(route) {
     console.log(res);
     event.preventDefault();
 }
+
+//Currently not being used
+function applyImageOffCanvas(image){
+    document.getElementById("octext").innerText = "asdnaskdnasjkldnaslkn";
+    document.getElementById("offCanvasImg").src = image;
+}
