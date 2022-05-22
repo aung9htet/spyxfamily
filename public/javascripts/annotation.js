@@ -5,13 +5,25 @@ function setBackground(image) {
     console.log(context);
     canvas.width = 850;
     canvas.height = 600;
-    var prop = 300/400;
-    var width = canvas.width;
-    var height = width*prop;
     var imageObj = new Image();
+
     imageObj.onload = function() {
+        // To set the display size use the style width and height
+        var width = imageObj.naturalWidth;
+        var height = imageObj.naturalHeight;
+        var prop = imageObj.naturalWidth/imageObj.naturalHeight;
+
+        if (height >  width){
+            var new_height = canvas.height;
+            var new_width = new_height*prop;
+        }
+        else {
+            var new_width = canvas.width;
+            var new_height = new_width/prop;
+        }
+
         console.log(imageObj.src);
-        context.drawImage(imageObj, 0, 0, width, height);
+        context.drawImage(imageObj, (canvas.width-new_width)/2, (canvas.height-new_height)/2, new_width, new_height);
     }
     imageObj.src = image;
 }
@@ -23,21 +35,6 @@ var context = canvas.getContext('2d');
 // To set the resolution use the canvas width and height properties
 canvas.width = 850;
 canvas.height = 600;
-
-// To set the display size use the style width and height
-
-var prop = img.height/img.width;
-
-if (img.height > img.width){
-    var height = canvas.height;
-    var width = height/prop;
-}
-else {
-    var width = canvas.width;
-    var height = width*prop;
-}
-
-
 
 // Painting
 const colors = document.getElementsByClassName("colorPalette");
