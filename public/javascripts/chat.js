@@ -35,7 +35,7 @@ async function loadData(roomNo, forceReload) {
     let chatData = await getChatData(roomNo)
     let imageData = await getImageData(roomNo)
     if (imageData) {
-        img.src = imageData.img;
+        setBackground(imageData.img);
     }
     if (!forceReload && chatData && chatData.length > 0) {
         for (let chat of chatData)
