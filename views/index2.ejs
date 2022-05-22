@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Index Page</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+    <style>
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .centerBlock {
+            display: table;
+            margin: auto;
+        }
+        .card:hover{
+            transition: 1s;
+            transform:scale(1.05);
+            cursor: pointer;
+
+        }
+        .card:hover img{
+            transition: 1s;
+            opacity: 0.7;
+
+        }
+        #createBtn:hover{
+            transition: 0.7s;
+            transform:scale(1.05);
+        }
+    </style>
+</head>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <ul class="navbar-nav">
+        <li class="nav-item active">
+            <a class="nav-link" href="/">Alexander Li Wang</a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="index">Main</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="insert">Create Story</a>
+        </li>
+    </ul>
+</nav>
+<body class="bg-light">
+<div class="container mt-5">
+    <h1 class="text-center text-body display-3">Display Data using Node.js & MySQL</h1>
+    <div class="row">
+        <div class="container m-5">
+            <div class="col text-center">
+                <button onclick="location.href='insert'" class="btn btn-light shadow" id="createBtn">Create Story</button>
+            </div>
+        </div>
+    </div>
+
+    <% for(var i = 0; i < stories.length; i+=3) { %>
+        <% if (i === stories.length){ break %>
+        <% } else if (i+1 === stories.length){ %>
+            <div class="row justify-content-md-center">
+                <div class="col justify-content-md-center">
+                    <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
+                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i].img %>">
+                        <div class="card-body">
+                            <p><b>Title:</b><%=stories[i].title %></p>
+                            <p><b>Short text:</b><%=stories[i].short_text %></p>
+                            <p><b>Author name:</b><%=stories[i].author_name %></p>
+                            <p><b>Story:</b><%=stories[i].short_text %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } else if (i+2 === stories.length){ %>
+            <div class="row justify-content-md-center">
+                <div class="col">
+                    <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
+                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i].img %>">
+                        <div class="card-body">
+                            <p><b>Title:</b><%=stories[i].title %></p>
+                            <p><b>Short text:</b><%=stories[i].short_text %></p>
+                            <p><b>Author name:</b><%=stories[i].author_name %></p>
+                            <p><b>Story:</b><%=stories[i].short_text %></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
+                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+1].img %>">
+                        <div class="card-body">
+                            <p><b>Title:</b><%=stories[i+1].title %></p>
+                            <p><b>Short text:</b><%=stories[i+1].short_text %></p>
+                            <p><b>Author name:</b><%=stories[i+1].author_name %></p>
+                            <p><b>Story:</b><%=stories[i+1].short_text %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } else if (i+3 === stories.length){ %>
+            <div class="row justify-content-md-center">
+                <div class="col">
+                    <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
+                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i].img %>">
+                        <div class="card-body">
+                            <p><b>Title:</b><%=stories[i].title %></p>
+                            <p><b>Short text:</b><%=stories[i].short_text %></p>
+                            <p><b>Author name:</b><%=stories[i].author_name %></p>
+                            <p><b>Story:</b><%=stories[i].short_text %></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
+                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+1].img %>">
+                        <div class="card-body">
+                            <p><b>Title:</b><%=stories[i+1].title %></p>
+                            <p><b>Short text:</b><%=stories[i+1].short_text %></p>
+                            <p><b>Author name:</b><%=stories[i+1].author_name %></p>
+                            <p><b>Story:</b><%=stories[i+1].short_text %></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
+                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+2].img %>">
+                        <div class="card-body">
+                            <p><b>Title:</b><%=stories[i+2].title %></p>
+                            <p><b>Short text:</b><%=stories[i+2].short_text %></p>
+                            <p><b>Author name:</b><%=stories[i+2].author_name %></p>
+                            <p><b>Story:</b><%=stories[i+2].short_text %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% break }else { %>
+            <div class="row justify-content-md-center">
+                <div class="col">
+                    <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
+                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i].img %>">
+                        <div class="card-body">
+                            <p><b>Title:</b><%=stories[i].title %></p>
+                            <p><b>Short text:</b><%=stories[i].short_text %></p>
+                            <p><b>Author name:</b><%=stories[i].author_name %></p>
+                            <p><b>Story:</b><%=stories[i].short_text %></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
+                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+1].img %>">
+                        <div class="card-body">
+                            <p><b>Title:</b><%=stories[i+1].title %></p>
+                            <p><b>Short text:</b><%=stories[i+1].short_text %></p>
+                            <p><b>Author name:</b><%=stories[i+1].author_name %></p>
+                            <p><b>Story:</b><%=stories[i+1].short_text %></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
+                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+2].img %>">
+                        <div class="card-body">
+                            <p><b>Title:</b><%=stories[i+2].title %></p>
+                            <p><b>Short text:</b><%=stories[i+2].short_text %></p>
+                            <p><b>Author name:</b><%=stories[i+2].author_name %></p>
+                            <p><b>Story:</b><%=stories[i+2].short_text %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    <% } %>
+</div>
+</body>
+</html>

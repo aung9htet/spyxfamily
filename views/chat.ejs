@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.css">
+    <style>
+        .my-message {
+            bottom: 100%;
+            left: 30px;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+            border-bottom-color: #efefef;
+            border-width: 10px;
+            margin-left: -10px
+        }
+        canvas{
+            width: 100%;
+        }
+        button:hover{
+            transition: 1s;
+        }
+    </style>
+</head>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <ul class="navbar-nav">
+        <li class="nav-item active">
+            <a class="nav-link" href="/">Alexander Li Wang</a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="index">Main</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="insert">Create Story</a>
+        </li>
+    </ul>
+</nav>
+<body onload="init()" class="bg-light">
+<div id="initial_form" style="display: block">
+    <canvas style="display:none;" id="canvas"></canvas>
+    <div class="container mt-5">
+        <h1 class="text-center text-body display-1"><%= title %></h1>
+        <p class="text-center">Please insert the id of the Room you want to Join, if you do not have a room id, click Generate Room</p>
+    </div>
+    <div class="container mt-5 d-flex justify-content-md-center">
+        <div class="card shadow">
+            <div class="card-body m-4">
+                <form enctype="multipart/form-data" onsubmit="return false;">
+                    <p>
+                        <label for="name" class="font-weight-bold"> Your name </label>
+                        <input type="text" class="form-control mb-3" id="name" name="name" placeholder="Name">
+                    </p>
+                    <label class="font-weight-bold"> Room Number </label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="roomNo" name="roomNo" placeholder="Room number">
+                        <div class="input-group-append">
+                            <button id="roomNoGenerator" class="btn btn-primary" onclick="generateRoom()">Generate Room</button>
+                        </div>
+                    </div>
+                    <p>
+                        <label for='image' class="font-weight-bold">Image</label>
+                        <input type="file" name="myImage" class="form-control-file" id="myImage" onchange="readImage(this)" accept="image/png, image/jpeg">
+                    </p>
+
+                    <p class="text-center"><button id="connect" class="btn btn-primary mt-3" onclick="connectToRoom()">Connect</button></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid pt-5 pl-5 pr-5" id="container_interface" style="display:none">
+    <div class="row">
+        <div class="col-6 col-md-6" id="canvas_interface" style="display:none" >
+            <div class="card" id="canvas_col">
+                <img id="img" style="display: none" alt="your image" />
+                <!--<img id="image" height="100%" >-->
+                <canvas id="my_canvas" ></canvas>
+                <div class="controls">
+                    <div class="lineWidth input-group mb-3 justify-content-center">
+                        <label class="input-group-prepend input-group-text mr-3">-</label>
+                        <div class="text-center">
+                            <label class="text-body">Line width</label>
+                            <input type="range" id="lineWidth" class="custom-range form-control-range"
+                                   min="0.1" max="5.0" value="2.5" step="0.1"/>
+                        </div>
+                        <label class="input-group-append input-group-text ml-3">+</label>
+                    </div>
+                    <div class="currentColor">
+                        <div class="input-group mb-3">
+                            <label class="input-group-prepend input-group-text">Current Color</label>
+                            <div class="input-group-append">
+                                <button id="currentColor" class="btn" style="background-color: black"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="colors" id="colorPalette">
+                        <div class="color colorPalette"
+                             style="background-color: black;"></div>
+                        <div class="color colorPalette"
+                             style="background-color: white;"></div>
+                        <div class="color colorPalette"
+                             style="background-color: red;"></div>
+                        <div class="color colorPalette"
+                             style="background-color: orange;"></div>
+                        <div class="color colorPalette"
+                             style="background-color: yellow;"></div>
+                        <div class="color colorPalette"
+                             style="background-color: green;"></div>
+                        <div class="color colorPalette"
+                             style="background-color: blue;"></div>
+                        <div class="color colorPalette"
+                             style="background-color: navy;"></div>
+                        <div class="color colorPalette"
+                             style="background-color: purple;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--    </div>-->
+        <div class="col-3 col-md-3">
+            <p class="text-center"><button id="switchMode" class="btn btn-danger btn-block">Switch to Knowledge Graph Mode</button></p>
+            <div class="myRow" id="typeForm" style="display: none">
+                <div class="input-group">
+                    <label for="myType" class="input-group-text input-group-prepend">Type: </label>
+                    <input class="form-control" type="text" id="myType">
+                    <div class="input-group-append">
+                        <button onclick="widgetInit()" class="btn btn-primary">Set type</button>
+                    </div>
+                </div>
+            </div>
+            <div class="myRow" id='widget' style="display: none">
+                <div class="input-group">
+                    <label for="myInput" class="input-group-text input-group-prepend">Search for: </label>
+                    <input class="form-control" type="text" id="myInput">
+                    <div class="myRow input-group-text input-group-append" id="typeSet"></div>
+                </div>
+            </div>
+            <div>
+                <div class='resultPanel mb-3 mt-3' id="resultPanel" style="display: none; background-color: white;">
+                    <h3 id="resultName"></h3>
+                    <h4 id="resultId"></h4>
+                    <div id="resultDescription"></div>
+                    <div>
+                        <a id="resultUrl" target="_blank">
+                            Link to Webpage
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-3 col-md-3" >
+            <div class="card" >
+                <div id="chat_interface" class="card-body" style="display: none" >
+                    <div class="text-center">
+                        <h3 class=""><div id="who_you_are" style="display: inline" style="height: 10vh"></div>,</h3>
+                        <h5>
+                            you are in room: <div id="in_room" style="display: inline"></div>
+                        </h5>
+                    </div>
+                    <!--    </div>-->
+                    <button id = "loadImage" class="btn btn-block" onclick="loadImage()"> Load Image </button>
+                    <div id="history" style="height: 35vh" class="boxed scrolling" ></div>
+                    <div id="input" style="height: 5vh" class=" boxed message" class="my-message">
+                    </div>
+                    <form onsubmit="return false;" style="width: 100%">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text" for="name"> chat: </label>
+                            </div>
+                            <input type="text" class="form-control" id="chat_input" name="chat_input" style="width: 80%">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" id="chat_send" onclick="sendChatText()">Send</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="/javascripts/annotation.js"></script>
+<script src="/javascripts/loadImage.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="/javascripts/canvas.js"></script>
+<script src="/javascripts/idb/index.js"  type="module"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/javascripts/database.js" type="module"></script>
+<script src="/javascripts/chat.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.js"></script>
+</body>
+</html>
