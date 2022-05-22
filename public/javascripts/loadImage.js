@@ -14,19 +14,19 @@ async function loadImage(){
 
 // To set the display size use the style width and height
 
-    var prop = img.height/img.width;
+    var prop = img.width/img.height;
 
     if (img.height > img.width){
         var height = canvas.height;
-        var width = height/prop;
+        var width = height*prop;
     }
     else {
         var width = canvas.width;
-        var height = width*prop;
+        var height = width/prop;
     }
 
     imageObj.onload = function () {
-        context.drawImage(imageObj, 0, 0, width, height);
+        context.drawImage(imageObj, (canvas.width-width)/2, (canvas.height-height)/2, width, height);
     };
     imageObj.src = imageData;
 }
