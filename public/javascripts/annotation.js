@@ -1,9 +1,23 @@
+function setBackground(image) {
+    var canvas = document.getElementById('my_canvas');
+    console.log(canvas);
+    var context = canvas.getContext('2d');
+    console.log(context);
+    canvas.width = 850;
+    canvas.height = 600;
+    var prop = 300/400;
+    var width = canvas.width;
+    var height = width*prop;
+    var imageObj = new Image();
+    imageObj.onload = function() {
+        console.log(imageObj.src);
+        context.drawImage(imageObj, 0, 0, width, height);
+    }
+    imageObj.src = image;
+}
+
 var canvas = document.getElementById('my_canvas');
-var img = document.getElementById('img');
-var imgSrc = img.src;
-console.log(imgSrc)
 var context = canvas.getContext('2d');
-var imageObj = new Image();
 
 
 // To set the resolution use the canvas width and height properties
@@ -16,10 +30,6 @@ var prop = img.height/img.width;
 var width = canvas.width;
 var height = width*prop;
 
-imageObj.onload = function() {
-    context.drawImage(img, 0, 0, width, height);
-};
-imageObj.src = imgSrc;
 
 // Painting
 const colors = document.getElementsByClassName("colorPalette");
@@ -101,8 +111,8 @@ function handleModeClick() {
 //To prevent right click
 
 function handleCM(event) {
-   event.preventDefault();
- }
+    event.preventDefault();
+}
 
 if (canvas) {
     canvas.addEventListener("mousemove", onMouseMove);
@@ -197,4 +207,3 @@ function queryMainEntity(id, type){
         });
     });
 }
-

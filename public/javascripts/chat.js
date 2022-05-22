@@ -215,6 +215,7 @@ function connectToRoom() {
             var canvas = document.getElementById('canvas');
             var imgBase = canvas.toDataURL();
             storeImageData(roomNo, {roomId: roomNo, img: imgBase})
+            setBackground(imgBase);
         }
         if (!name) name = 'Unknown-' + Math.random();
         //check if room id is in correct format
