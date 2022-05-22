@@ -8,6 +8,10 @@ var story = require('../controllers/stories');
 var initDB = require('../controllers/init');
 initDB.init();
 
+router.get('/', (req, res) => {
+  res.redirect('/index');
+});
+
 
 router.get('/index',(req,res,next) =>{
   //Here fetch data using mongoose query like
