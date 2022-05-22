@@ -15,8 +15,16 @@ async function loadImage(){
 // To set the display size use the style width and height
 
     var prop = img.height/img.width;
-    var width = canvas.width;
-    var height = width*prop;
+
+    if (img.height > img.width){
+        var height = canvas.height;
+        var width = height/prop;
+    }
+    else {
+        var width = canvas.width;
+        var height = width*prop;
+    }
+
     imageObj.onload = function () {
         context.drawImage(imageObj, 0, 0, width, height);
     };

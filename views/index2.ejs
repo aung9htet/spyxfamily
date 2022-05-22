@@ -28,6 +28,23 @@
             transition: 0.7s;
             transform:scale(1.05);
         }
+        .btnOnImage {
+            position: relative;
+        }
+        .btnOnImage .imageBtn {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            padding: 12px 24px;
+            border: none;
+        }
+        .card:hover .btnOnImage .imageBtn{
+            transition: 1.2s;
+            display: block;
+        }
     </style>
 </head>
 <nav class="navbar navbar-expand-sm bg-white navbar-white">
@@ -58,7 +75,10 @@
             <div class="row justify-content-md-center">
                 <div class="col justify-content-md-center">
                     <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
-                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i].img %>">
+                        <div class="btnOnImage">
+                            <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i].img %>">
+                            <button class="imageBtn btn btn-light">Start Chat</button>
+                        </div>
                         <div class="card-body">
                             <p><b>Title:</b><%=stories[i].title %></p>
                             <p><b>Short text:</b><%=stories[i].short_text %></p>
@@ -72,7 +92,10 @@
             <div class="row justify-content-md-center">
                 <div class="col">
                     <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
-                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i].img %>">
+                        <div class="btnOnImage">
+                            <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i].img %>">
+                            <button class="imageBtn btn btn-light">Start Chat</button>
+                        </div>
                         <div class="card-body">
                             <p><b>Title:</b><%=stories[i].title %></p>
                             <p><b>Short text:</b><%=stories[i].short_text %></p>
@@ -83,7 +106,10 @@
                 </div>
                 <div class="col">
                     <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
-                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+1].img %>">
+                        <div class="btnOnImage">
+                            <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+1].img %>">
+                            <button class="imageBtn btn btn-light">Start Chat</button>
+                        </div>
                         <div class="card-body">
                             <p><b>Title:</b><%=stories[i+1].title %></p>
                             <p><b>Short text:</b><%=stories[i+1].short_text %></p>
@@ -97,7 +123,10 @@
             <div class="row justify-content-md-center">
                 <div class="col">
                     <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
-                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i].img %>">
+                        <div class="btnOnImage">
+                            <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i].img %>">
+                            <button class="imageBtn btn btn-light">Start Chat</button>
+                        </div>
                         <div class="card-body">
                             <p><b>Title:</b><%=stories[i].title %></p>
                             <p><b>Short text:</b><%=stories[i].short_text %></p>
@@ -108,7 +137,10 @@
                 </div>
                 <div class="col">
                     <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
-                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+1].img %>">
+                        <div class="btnOnImage">
+                            <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+1].img %>">
+                            <button class="imageBtn btn btn-light">Start Chat</button>
+                        </div>
                         <div class="card-body">
                             <p><b>Title:</b><%=stories[i+1].title %></p>
                             <p><b>Short text:</b><%=stories[i+1].short_text %></p>
@@ -119,7 +151,10 @@
                 </div>
                 <div class="col">
                     <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
-                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+2].img %>">
+                        <div class="btnOnImage">
+                            <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+2].img %>">
+                            <button class="imageBtn btn btn-light">Start Chat</button>
+                        </div>
                         <div class="card-body">
                             <p><b>Title:</b><%=stories[i+2].title %></p>
                             <p><b>Short text:</b><%=stories[i+2].short_text %></p>
@@ -133,7 +168,10 @@
             <div class="row justify-content-md-center">
                 <div class="col">
                     <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
-                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i].img %>">
+                        <div class="btnOnImage">
+                            <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i].img %>">
+                            <button class="imageBtn btn btn-light">Start Chat</button>
+                        </div>
                         <div class="card-body">
                             <p><b>Title:</b><%=stories[i].title %></p>
                             <p><b>Short text:</b><%=stories[i].short_text %></p>
@@ -144,7 +182,10 @@
                 </div>
                 <div class="col">
                     <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
-                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+1].img %>">
+                        <div class="btnOnImage">
+                            <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+1].img %>">
+                            <button class="imageBtn btn btn-light">Start Chat</button>
+                        </div>
                         <div class="card-body">
                             <p><b>Title:</b><%=stories[i+1].title %></p>
                             <p><b>Short text:</b><%=stories[i+1].short_text %></p>
@@ -155,7 +196,10 @@
                 </div>
                 <div class="col">
                     <div class="card shadow mb-5 centerBlock" style="max-width: 20rem;">
-                        <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+2].img %>">
+                        <div class="btnOnImage">
+                            <img style="width: 300px; height: 300px; object-fit: cover;" class="" src="<%= stories[i+2].img %>">
+                            <button class="imageBtn btn btn-light">Start Chat</button>
+                        </div>
                         <div class="card-body">
                             <p><b>Title:</b><%=stories[i+2].title %></p>
                             <p><b>Short text:</b><%=stories[i+2].short_text %></p>

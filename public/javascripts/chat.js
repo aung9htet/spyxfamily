@@ -87,7 +87,6 @@ function readImage(input) {
     }
     img.src = imgSrc;
     console.log(imgSrc);
-    document.getElementById("callImageBtn").innerText = img.src;
 }
 
 /**
