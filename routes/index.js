@@ -49,8 +49,5 @@ router.post('/insert', function(req, res, next) {
   redirect("/");
 };*/
 
-router.get('/insert', function(req, res, next) {
-  res.render('insert', { title: 'My Form' });
-});
 
 module.exports = router;
