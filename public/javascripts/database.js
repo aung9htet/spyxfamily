@@ -1,10 +1,16 @@
 import * as idb from 'https://cdn.jsdelivr.net/npm/idb@7/+esm';
 
 let db = NaN;
+let db_draw = NaN;
+let db_annotation = NaN;
 
 const CHAT_DB_NAME= 'db_chat';
 const CHAT_STORE_NAME= 'chat_storage';
 const IMG_STORE_NAME = 'image_storage';
+const DRAW_DB_NAME= 'db_draw';
+const DRAW_STORE_NAME= 'draw_storage';
+const ANNOTATION_DB_NAME = 'db_annotation';
+const ANNOTATION_STORE_NAME = 'annotation_draw';
 
 /**
  * it inits the database and creates an index for the chat field
@@ -26,6 +32,28 @@ async function initDatabase(){
                         autoIncrement: true
                     });
                     imageDB.createIndex('roomId', 'roomId', {unique: false, multiEntry: true});
+                }
+            }
+        });
+        db_draw = await idb.openDB(DRAW_DB_NAME, 2, {
+            upgrade(upgradeDb, oldVersion, newVersion){
+                if (!upgradeDb.objectStoreNames.contains(DRAW_STORE_NAME)){
+                    let drawDB = upgradeDb.createObjectStore(DRAW_STORE_NAME,{
+                        keyPath: 'id',
+                        autoIncrement: true
+                    })
+                    drawDB.createIndex('roomId', 'roomId', {unique: false, multiEntry: true});
+                }
+            }
+        });
+        db_annotation = await idb.openDB(ANNOTATION_DB_NAME, 2, {
+            upgrade(upgradeDb, oldVersion, newVersion){
+                if (!upgradeDb.objectStoreNames.contains(ANNOTATION_STORE_NAME)){
+                    let annotationDB = upgradeDb.createObjectStore(ANNOTATION_STORE_NAME,{
+                        keyPath: 'id',
+                        autoIncrement: true
+                    })
+                    annotationDB.createIndex('roomId', 'roomId', {unique: false, multiEntry: true});
                 }
             }
         });
@@ -101,7 +129,6 @@ window.getImageData= getImageData;
  * @params chatObject = [name, text]
  */
 async function storeChatData(roomId, chatObject) {
-    console.log(chatObject);
     // check if database exists
     if (!db)
         // initialise database
@@ -119,7 +146,7 @@ async function storeChatData(roomId, chatObject) {
         } catch(error) {
             localStorage.setItem(roomId, JSON.stringify(chatObject));
             console.log('Error message:'+ error);
-        };
+        }
     }
     else localStorage.setItem(roomId, JSON.stringify(chatObject));
 }
@@ -172,3 +199,157 @@ async function getChatData(roomId) {
     }
 }
 window.getChatData= getChatData;
+
+/**
+ * It saves the location for the draw room in localStorage
+ * @params roomId
+ * @params chatObject = [x, y]
+ */
+async function storeDrawData(roomId, drawObject) {
+    // check if database exists
+    if (!db_draw)
+        // initialise database
+        await initDatabase();
+    if (db_draw) {
+        // try storing in index db
+        try{
+            const tx = db_draw.transaction(DRAW_STORE_NAME, 'readwrite');
+            await Promise.all ([
+                tx.store.add(drawObject),
+                tx.complete
+            ]);
+            console.log('added item to the store! '+ JSON.stringify(drawObject));
+            // set in local storage if index db doesn't work
+        } catch(error) {
+            localStorage.setItem(roomId, JSON.stringify(drawObject));
+            console.log('Error message:'+ error);
+        }
+    }
+    else localStorage.setItem(roomId, JSON.stringify(drawObject));
+}
+window.storeDrawData= storeDrawData;
+
+/**
+ * it retrieves all the drawing data for a drawroom from the database
+ * @param roomId
+ * @returns objects like {name, text}
+ */
+async function getDrawData(roomId) {
+    // check if db exists or not
+    if (!db_draw)
+        await initDatabase();
+    if (db_draw) {
+        // fetch database info
+        try {
+            console.log('fetching for drawing data: ' + roomId);
+            let tx = await db_draw.transaction(DRAW_STORE_NAME, 'readonly');
+            let store = await tx.objectStore(DRAW_STORE_NAME);
+            // set specific item to get from
+            let index = await store.index('roomId');
+            let drawList = await index.getAll(IDBKeyRange.only(roomId));
+            await tx.complete;
+            let drawing = [];
+            // processing and send chat message
+            if (drawList && drawList.length > 0) {
+                for (let elem of drawList) {
+                    drawing.push(elem);
+                }
+                return drawing;
+            } else {
+                // if the database is not supported, we use localstorage
+                const value = localStorage.getItem(roomId);
+                if (value == null)
+                    return drawing;
+                else drawing.push(value);
+                return drawing;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    } else {
+        const value = localStorage.getItem(roomId);
+        let drawing = []
+        if (value == null)
+            return drawing;
+        else drawing.push(value);
+        return drawing;
+    }
+}
+window.getDrawData= getDrawData;
+
+/**
+ * It saves the location for the annotation room in localStorage
+ * @params roomId
+ * @params chatObject = [x, y]
+ */
+async function storeAnnotationData(roomId, annotationObject) {
+    // check if database exists
+    if (!db_annotation)
+        // initialise database
+        await initDatabase();
+    if (db_annotation) {
+        // try storing in index db
+        try{
+            const tx = db_annotation.transaction(ANNOTATION_STORE_NAME, 'readwrite');
+            await Promise.all ([
+                tx.store.add(annotationObject),
+                tx.complete
+            ]);
+            console.log('added item to the store! '+ JSON.stringify(annotationObject));
+            // set in local storage if index db doesn't work
+        } catch(error) {
+            localStorage.setItem(roomId, JSON.stringify(annotationObject));
+            console.log('Error message:'+ error);
+        }
+    }
+    else localStorage.setItem(roomId, JSON.stringify(annotationObject));
+}
+window.storeAnnotationData= storeAnnotationData;
+
+/**
+ * it retrieves all the annotation data for an annotation from the database
+ * @param roomId
+ * @returns objects like {name, text}
+ */
+async function getAnnotationData(roomId) {
+    // check if db exists or not
+    if (!db_annotation)
+        await initDatabase();
+    if (db_annotation) {
+        // fetch database info
+        try {
+            console.log('fetching for drawing data: ' + roomId);
+            let tx = await db_annotation.transaction(ANNOTATION_STORE_NAME, 'readonly');
+            let store = await tx.objectStore(ANNOTATION_STORE_NAME);
+            // set specific item to get from
+            let index = await store.index('roomId');
+            let annotationList = await index.getAll(IDBKeyRange.only(roomId));
+            await tx.complete;
+            let annotations = [];
+            // processing and send chat message
+            if (annotationList && annotationList.length > 0) {
+                for (let elem of annotationList) {
+                    annotations.push(elem);
+                }
+                return annotations;
+            } else {
+                // if the database is not supported, we use localstorage
+                const value = localStorage.getItem(roomId);
+                if (value == null)
+                    return annotations;
+                else annotations.push(value);
+                return annotations;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    } else {
+        const value = localStorage.getItem(roomId);
+        let annotations = []
+        if (value == null)
+            return annotations;
+        else annotations.push(value);
+        return annotations;
+    }
+}
+window.getAnnotationData= getAnnotationData;

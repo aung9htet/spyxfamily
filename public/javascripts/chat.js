@@ -2,6 +2,7 @@ let name = null;
 let roomNo = null;
 let chat= io.connect('/chat');
 let online_status = true;
+
 /**
  * called by <body onload>
  * it initialises the interface and the expected socket messages
@@ -11,8 +12,48 @@ function init() {
     // it sets up the interface so that userId and room are selected
     document.getElementById('initial_form').style.display = 'block';
     document.getElementById('chat_interface').style.display = 'none';
+    // initialise the database
+    if ('indexedDB' in window) {
+        initDatabase()
+    }
+    else {
+        console.log('This browser doesn\'t support IndexedDB');
+    }
     //initialise chat socket
     initChatSocket()
+}
+
+/**
+ * initialises the socket and indexdb for chat, draw, annotations
+ */
+function initChatSocket(){
+    // chat socket
+    chat.on('joined', function(room, userId) {
+        if (userId === name) {
+            hideLoginInterface(room, userId)
+            console.log('loading data')
+            loadData(room, false)
+        } else {
+            writeOnChatHistory('<b>' + userId + '</b> ' + 'joined room ' + room);
+        }
+    });
+    chat.on('chat', function (room, userId, chatText) {
+        let who = userId
+        if (userId === name) who = 'Me'
+        writeOnChatHistory('<b>' + who + ':</b> ' + chatText);
+    })
+    chat.on('draw', function(room, userId, x, y, x_1, y_1, x_2, y_2, painting, color, line, mode){
+        // make sure the user does not repeat drawing itself
+        if (userId !== name) {
+            onMouseMoveRedraw(x, y, x_1, y_1, x_2, y_2, painting, color, line, mode)
+        }
+    })
+    chat.on('send', function(room, userId, resultId, resultName, resultDescription, resultUrl, resultColor){
+        // make sure the user does not repeat drawing itself
+        if (userId !== name) {
+            showAnnotation(resultId, resultName, resultDescription, resultUrl, resultColor)
+        }
+    })
 }
 
 /**
@@ -24,7 +65,7 @@ function writeLoadedData(chatDetails){
     const msg = chatDetails.msg;
     let loadName = chatDetails.name;
     if (loadName === name) (loadName = "Me")
-    writeOnChatHistory('<b>' + chatDetails.name + ':</b> ' +  msg);
+    writeOnChatHistory('<b>' + loadName + ':</b> ' +  msg);
 }
 
 /**
@@ -34,40 +75,29 @@ async function loadData(roomNo, forceReload) {
     // get chat data by name and currently set room id
     let chatData = await getChatData(roomNo)
     let imageData = await getImageData(roomNo)
+    let annotationData = await getAnnotationData(roomNo)
     if (imageData) {
         setBackground(imageData.img);
     }
     if (!forceReload && chatData && chatData.length > 0) {
         for (let chat of chatData)
             writeLoadedData(chat)
-    } else {
-        const input = JSON.stringify({roomId: roomNo});
-        $.ajax({
-            url: '/',
-            data: input,
-            contentType: 'application/json',
-            type: 'POST',
-            success: function (dataR) {
-                // no need to JSON parse the result, as we are using
-                // dataType:json, so JQuery knows it and unpacks the
-                // object for us before returning it
-                writeLoadedData(dataR);
-                storeChatData(dataR.roomId, dataR);
-                if (document.getElementById('offline_div') != null)
-                    document.getElementById('offline_div').style.display = 'none';
-            },
-            error: async function (xhr, status, error) {
-                showOfflineWarning();
-                let cachedData=await getChatData(roomNo);
-                if (cachedData && cachedData.length>0)
-                    writeLoadedData(cachedData[0])
-                const dvv = document.getElementById('offline_div');
-                if (dvv != null)
-                    dvv.style.display = 'block';
-            }
-        });
+    }
+    if (!forceReload && annotationData && annotationData.length > 0) {
+        for (let annotation of annotationData) {
+            showAnnotation(annotation.resultId, annotation.resultName, annotation.resultDescription, annotation.resultUrl, annotation.resultColor);
+        }
     }
 }
+
+async function loadDrawing(){
+    let drawData = await getDrawData(roomNo)
+    if (drawData && drawData.length > 0) {
+        for (let draw of drawData)
+            onMouseMoveRedraw(draw.draw_x, draw.draw_y, draw.draw_x1, draw.draw_y1, draw.draw_x2, draw.draw_y2, draw.painting, draw.color, draw.line, draw.mode)
+    }
+}
+window.loadDrawing = loadDrawing;
 
 function readImage(input) {
     const canvas = document.getElementById('canvas');
@@ -135,48 +165,56 @@ function generateRoom() {
 }
 
 /**
- * initialises the socket for /chat
- */
-function initChatSocket(){
-    /** initialise the database */
-    if ('indexedDB' in window) {
-        initDatabase()
-    }
-    else {
-        console.log('This browser doesn\'t support IndexedDB');
-    }
-
-    if (online_status == true) {
-        chat.on('joined', function (room, userId) {
-            if (userId === name) {
-                hideLoginInterface(room, userId)
-                console.log('loading data')
-                loadData(roomNo, false).then(response => console.log("Successfully loaded data"))
-            } else {
-                writeOnChatHistory('<b>' + userId + '</b> ' + 'joined room ' + room);
-            }
-        });
-        chat.on('chat', function (room, userId, chatText) {
-            let who = userId
-            // store data for both those who received or send
-            storeChatData(roomNo, {roomId: room, name: name, msg: chatText})
-                .then(response => console.log('inserting data worked!!'))
-                .catch(error => console.log('error inserting: ' + +JSON.stringify(error)))
-            if (userId === name) who = 'Me'
-            writeOnChatHistory('<b>' + who + ':</b> ' + chatText);
-        });
-    }
-}
-
-/**
  * called when the Send button is pressed. It gets the text to send from the interface
  * and sends the message via  socket
  */
 function sendChatText() {
     let chatText = document.getElementById('chat_input').value;
-    // @todo send the chat message
     chat.emit('chat', roomNo, name, chatText);
+    // store data being emitted
+    storeChatData(roomNo, {roomId: roomNo, name: name, msg: chatText})
+        .then(response => console.log('inserting data worked!!'))
+        .catch(error => console.log('error inserting: ' + + JSON.stringify(error)))
 }
+
+/**
+ * Store and emit drawing data
+ * @param x
+ * @param y
+ * @param x_1
+ * @param y_1
+ * @param x_2
+ * @param y_2
+ * @param painting
+ * @param color
+ * @param line
+ * @param mode
+ */
+function sendDrawingData(x, y, x_1, y_1, x_2, y_2, painting, color, line, mode){
+    // store data being drawn then emit
+    storeDrawData(roomNo, {roomId: roomNo, name: name, draw_x: x, draw_y: y, draw_x1: x_1, draw_y1: y_1, draw_x2: x_2, draw_y2: y_2, painting: painting, color: color, line: line, mode: mode})
+        .then(response => console.log('inserting drawing data worked!!'))
+        .catch(error => console.log('error inserting: ' + + JSON.stringify(error)))
+    chat.emit('draw', roomNo, name, x, y, x_1, y_1, x_2, y_2, painting, color, line, mode)
+}
+window.sendDrawingData = sendDrawingData;
+
+/**
+ * Store and emit annotation data
+ * @param resultId
+ * @param resultName
+ * @param resultDescription
+ * @param resultUrl
+ * @param resultColor
+ */
+function sendAnnotationData(resultId, resultName, resultDescription, resultUrl, resultColor){
+    // store data being drawn then emit
+    storeAnnotationData(roomNo, {roomId: roomNo, name: name, resultId: resultId, resultName: resultName, resultDescription: resultDescription, resultUrl: resultUrl, resultColor: resultColor})
+        .then(response => console.log('inserting annotation data worked!!'))
+        .catch(error => console.log('error inserting: ' + + JSON.stringify(error)))
+    chat.emit('send', roomNo, name, resultId, resultName, resultDescription, resultUrl, resultColor)
+}
+window.sendAnnotationData = sendAnnotationData;
 
 /**
  * check if room id is in correct format

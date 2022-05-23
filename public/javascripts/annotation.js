@@ -26,11 +26,11 @@ function setBackground(image) {
         context.drawImage(imageObj, (canvas.width-new_width)/2, (canvas.height-new_height)/2, new_width, new_height);
     }
     imageObj.src = image;
+    loadDrawing()
 }
 
 var canvas = document.getElementById('my_canvas');
 var context = canvas.getContext('2d');
-
 
 // To set the resolution use the canvas width and height properties
 canvas.width = 850;
@@ -41,6 +41,7 @@ const colors = document.getElementsByClassName("colorPalette");
 const range = document.getElementById("lineWidth");
 const currentColor = document.getElementById("currentColor");
 const knowledgeGraph = document.getElementById("switchMode");
+let saved_color = NaN;
 
 context.lineWidth = 2.5; /* 라인 굵기 */
 
@@ -84,7 +85,49 @@ function onMouseMove(event) {
             y2 = event.offsetY;
         }
     }
+    sendDrawingData(x, y, x1, y1, x2, y2, painting, saved_color, context.lineWidth, knowledgeGraph.innerText)
 }
+
+function onMouseMoveRedraw(draw_x, draw_y, draw_x1, draw_y1, draw_x2, draw_y2, painting, passed_color, line_width, mode) {
+    const x = draw_x;
+    const y = draw_y;
+    const painting_var = painting;
+    const x1_ph = x1
+    const y1_ph = x2
+    const x2_ph = x2
+    const y2_ph = y2
+    x1 = draw_x1
+    y1 = draw_y1
+    x2 = draw_x2
+    y2 = draw_y2
+    // set for colors
+    context.strokeStyle = passed_color;
+    context.fillStyle = passed_color;
+    // set for line width
+    var cur_line = context.lineWidth;
+    context.lineWidth = line_width
+    if (mode === "Switch to Knowledge Graph Mode") {
+        if (!painting_var) {
+            context.beginPath();
+            context.moveTo(x, y);
+        } else {
+            context.lineTo(x, y);
+            context.stroke();
+        }
+    } else{
+        if (!painting_var) {
+            rectDraw()
+        }
+    }
+    x1 = x1_ph
+    y1 = y1_ph
+    x2 = x2_ph
+    y2 = y2_ph
+    context.strokeStyle = saved_color;
+    context.fillStyle = saved_color;
+    context.lineWidth = cur_line
+}
+window.onMouseMoveRedraw = onMouseMoveRedraw;
 
 function rectDraw() {
     context.strokeRect(x1, y1, (x2 - x1), (y2 - y1));
@@ -92,6 +135,7 @@ function rectDraw() {
 
 function handleColorClick(event) {
     const color = event.target.style.backgroundColor;
+    saved_color = color
     context.strokeStyle = color;
     context.fillStyle = color;
     document.getElementById('currentColor').style.backgroundColor= color;
@@ -190,7 +234,27 @@ function selectItem(event){
     document.getElementById("resultUrl").href= row.qc;
     document.getElementById('resultPanel').style.display= 'block';
     document.getElementById('resultPanel').style.border= '5px solid ' +color;
+    sendAnnotationData(row.id, row.name, row.rc, row.gc, color)
 }
+
+/**
+ * Display annotation (To be fix to allow multiple displays)
+ * @param resultId
+ * @param resultName
+ * @param resultDescription
+ * @param resultUrl
+ * @param resultColor
+ */
+function showAnnotation(resultId, resultName, resultDescription, resultUrl, resultColor){
+    console.log(resultId, resultName, resultDescription, resultUrl, resultColor)
+    document.getElementById('resultId').innerText= 'id: '+ resultId;
+    document.getElementById('resultName').innerText= resultName;
+    document.getElementById('resultDescription').innerText= resultDescription;
+    document.getElementById("resultUrl").href= resultUrl;
+    document.getElementById('resultPanel').style.display= 'block';
+    document.getElementById('resultPanel').style.border= '5px solid ' + resultColor;
+}
+window.showAnnotation = showAnnotation
 
 /**
  * currently not used. left for reference
