@@ -13,7 +13,8 @@ const ANNOTATION_DB_NAME = 'db_annotation';
 const ANNOTATION_STORE_NAME = 'annotation_draw';
 
 /**
- * it inits the database and creates an index for the chat field
+ * The function initialises the database that will consist of the chat, drawings and knowledge graph
+ * The function creates the table for image and chat separately in the chat database
  */
 async function initDatabase(){
     if (!db) {
@@ -62,6 +63,12 @@ async function initDatabase(){
 }
 window.initDatabase= initDatabase;
 
+/**
+ * The function adds images to the database for the image table
+ * @param roomId                roomId related to the image
+ * @param imageObject           the image link
+ * @returns {Promise<void>}
+ */
 async function storeImageData(roomId, imageObject) {
     if (!db)
         await initDatabase();
@@ -81,6 +88,11 @@ async function storeImageData(roomId, imageObject) {
 }
 window.storeImageData = storeImageData;
 
+/**
+ * The function retrieves the image related to the roomId
+ * @param roomId The roomId for retrieving the image
+ * @returns {Promise<string|*|*[]|any>}
+ */
 async function getImageData(roomId) {
     // check if db exists or not
     if (!db)
@@ -123,10 +135,11 @@ async function getImageData(roomId) {
     }
 }
 window.getImageData= getImageData;
+
 /**
- * It saves the texts for a chatroom in localStorage
- * @params roomId
- * @params chatObject = [name, text]
+ * It saves the texts for a chatroom in the database
+ * @params roomId           The roomId related to the chat object
+ * @params chatObject       consists of the roomId, username, chat message
  */
 async function storeChatData(roomId, chatObject) {
     // check if database exists
@@ -154,8 +167,8 @@ window.storeChatData= storeChatData;
 
 /**
  * it retrieves all the chat data for a chatroom from the database
- * @param roomId
- * @returns objects like {name, text}
+ * @param roomId The roomId related to the chat object
+ * @returns consists of the roomId, username, chat message
  */
 async function getChatData(roomId) {
     // check if db exists or not
@@ -201,9 +214,9 @@ async function getChatData(roomId) {
 window.getChatData= getChatData;
 
 /**
- * It saves the location for the draw room in localStorage
- * @params roomId
- * @params chatObject = [x, y]
+ * It saves the location for the draw room in local storage
+ * @params roomId The roomId related to the drawing object
+ * @params consists of the room, userId, x, y, x_1, y_1, x_2, y_2, painting, color, line, mode
  */
 async function storeDrawData(roomId, drawObject) {
     // check if database exists
@@ -230,9 +243,9 @@ async function storeDrawData(roomId, drawObject) {
 window.storeDrawData= storeDrawData;
 
 /**
- * it retrieves all the drawing data for a drawroom from the database
- * @param roomId
- * @returns objects like {name, text}
+ * it retrieves all the drawing data for a draw room from the database
+ * @param roomId    The roomId related to the drawing object
+ * @returns         consists of the room, userId, x, y, x_1, y_1, x_2, y_2, painting, color, line, mode
  */
 async function getDrawData(roomId) {
     // check if db exists or not
@@ -278,9 +291,9 @@ async function getDrawData(roomId) {
 window.getDrawData= getDrawData;
 
 /**
- * It saves the location for the annotation room in localStorage
- * @params roomId
- * @params chatObject = [x, y]
+ * It saves the location for the annotation data in localStorage
+ * @params roomId           The roomId related to the annotation object
+ * @params chatObject       consists of the resultId, resultName, resultDescription, resultUrl, resultColor
  */
 async function storeAnnotationData(roomId, annotationObject) {
     // check if database exists
@@ -308,8 +321,8 @@ window.storeAnnotationData= storeAnnotationData;
 
 /**
  * it retrieves all the annotation data for an annotation from the database
- * @param roomId
- * @returns objects like {name, text}
+ * @param roomId        The roomId related to the annotation object
+ * @returns             consists of the resultId, resultName, resultDescription, resultUrl, resultColor
  */
 async function getAnnotationData(roomId) {
     // check if db exists or not

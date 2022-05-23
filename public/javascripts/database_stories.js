@@ -7,7 +7,7 @@ const STORY_STORE_NAME= 'story_storage';
 
 
 /**
- * it inits the database and creates an index for the chat field
+ * It inits the database and creates an index for the chat field
  */
 async function initStoryDatabase(){
     if (!db) {
@@ -28,9 +28,9 @@ async function initStoryDatabase(){
 window.initStoryDatabase= initStoryDatabase;
 
 /**
- * It saves the texts for a chatroom in localStorage
+ * It saves the story data in localStorage
  * @params roomId
- * @params chatObject = [name, text]
+ * @params chatObject consists of title, short text, author name, date of issue, images
  */
 async function storeStoryData(title, storyObject) {
     // check if database exists
@@ -57,9 +57,9 @@ async function storeStoryData(title, storyObject) {
 window.storeStoryData= storeStoryData;
 
 /**
- * it retrieves all the chat data for a chatroom from the database
- * @param roomId
- * @returns objects like {name, text}
+ * it retrieves the story data that can be retrieved from the title
+ * @param title     title related to the story
+ * @returns consists of title, short text, author name, date of issue, images
  */
 async function getStoryData(title) {
     // check if db exists or not
@@ -92,8 +92,8 @@ window.getStoryData= getStoryData;
 
 /**
  * it retrieves all the chat data for a chatroom from the database
- * @param roomId
- * @returns objects like {name, text}
+ * @param roomId        title related to the story
+ * @returns consists of title, short text, author name, date of issue, images
  */
 async function getAllStoryData() {
     // check if db exists or not

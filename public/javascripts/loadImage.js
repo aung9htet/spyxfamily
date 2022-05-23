@@ -1,3 +1,8 @@
+/**
+ * The function will be used to call the images depending on the client's roomId from the link acquired from the indexDb
+ * and loads them into the chat ejs file
+ * @returns {Promise<void>}
+ */
 async function loadImage(){
     let imageData = await getImageData(roomNo);
     imageData = imageData.img;

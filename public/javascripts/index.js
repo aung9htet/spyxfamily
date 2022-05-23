@@ -1,6 +1,6 @@
 /**
  * The function is called on body
- * The function will be used for initialising the indexDb for use
+ * The function will be used to initialise the indexDb for use
  * The function will initiate the function to start the database synchronization between the MongoDb and the IndexDb
  * The function will register the service workers for usage
  * The function will be displaying the stories from the indexDb
