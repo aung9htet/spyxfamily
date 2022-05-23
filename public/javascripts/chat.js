@@ -136,7 +136,7 @@ window.addEventListener('offline', function(e) {
     document.getElementById('typeForm').style.display = 'none';
     document.getElementById('widget').style.display = 'none';
     // chat
-    document.getElementById('chat_input').style.display = 'none';
+    document.getElementById('chat_set').style.display = 'none';
 }, false);
 
 /**
@@ -155,7 +155,7 @@ window.addEventListener('online', function(e) {
     // knowledge graph
     document.getElementById('typeForm').style.display = 'block';
     // chat
-    document.getElementById('chat_input').style.display = 'block';
+    document.getElementById('chat_set').style.display = 'block';
 }, false);
 
 function showOfflineWarning(){
