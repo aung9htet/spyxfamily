@@ -247,7 +247,7 @@ function showAnnotation(resultId, resultName, resultDescription, resultUrl, resu
     var resPan = document.createElement('div');
     resPan.style.backgroundColor = "white";
     resPan.style.border = '5px solid ' +resultColor;
-    resPan.className = 'mt-3 mb-3';
+    resPan.className = 'mt-3 mb-3 card p-2 shadow';
 
     var resName = document.createElement('h3');
     resName.innerText= resultName;
