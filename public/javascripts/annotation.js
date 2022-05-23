@@ -228,13 +228,8 @@ function selectItem(event){
     let row= event.row;
     const color = document.getElementById('currentColor').style.backgroundColor
     // document.getElementById('resultImage').src= row.json.image.url;
-    document.getElementById('resultId').innerText= 'id: '+row.id;
-    document.getElementById('resultName').innerText= row.name;
-    document.getElementById('resultDescription').innerText= row.rc;
-    document.getElementById("resultUrl").href= row.qc;
-    document.getElementById('resultPanel').style.display= 'block';
-    document.getElementById('resultPanel').style.border= '5px solid ' +color;
     sendAnnotationData(row.id, row.name, row.rc, row.gc, color)
+    showAnnotation(row.id, row.name, row.rc, row.gc, color)
 }
 
 /**
@@ -245,16 +240,40 @@ function selectItem(event){
  * @param resultUrl
  * @param resultColor
  */
+
 function showAnnotation(resultId, resultName, resultDescription, resultUrl, resultColor){
-    console.log(resultId, resultName, resultDescription, resultUrl, resultColor)
-    document.getElementById('resultId').innerText= 'id: '+ resultId;
-    document.getElementById('resultName').innerText= resultName;
-    document.getElementById('resultDescription').innerText= resultDescription;
-    document.getElementById("resultUrl").href= resultUrl;
-    document.getElementById('resultPanel').style.display= 'block';
-    document.getElementById('resultPanel').style.border= '5px solid ' + resultColor;
+    console.log(resultId, resultName, resultDescription, resultUrl, resultColor);
+
+    var resPan = document.createElement('div');
+    resPan.style.backgroundColor = "white";
+    resPan.style.border = '5px solid ' +resultColor;
+    resPan.className = 'mt-3 mb-3';
+
+    var resName = document.createElement('h3');
+    resName.innerText= resultName;
+
+    var resId = document.createElement('h4');
+    resId.innerText= 'id: '+ resultId;
+
+    var resDescript = document.createElement('div');
+    resDescript.innerText= resultDescription;
+
+    var resUrlCtn = document.createElement('div');
+    var resUrl = document.createElement('a');
+    resUrl.href= resultUrl;
+    resUrl.innerText = "Link to Webpage";
+
+    resPan.appendChild(resName);
+    resPan.appendChild(resId);
+    resPan.appendChild(resDescript);
+    resUrlCtn.appendChild(resUrl);
+    resPan.appendChild(resUrlCtn);
+
+    document.getElementById("resultPanelContainer").prepend(resPan);
 }
 window.showAnnotation = showAnnotation
+
+
 
 /**
  * currently not used. left for reference
