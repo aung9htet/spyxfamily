@@ -22,9 +22,12 @@ function initIndex() {
     createStories()
 }
 
-function pat() {
-    console.log("pat")
-}
+/**
+ * A helper function for posting to a URL.
+ * @param url The target URL of the axios query.
+ * @param data The data to be POSTED to the url.
+ * @return The response from the server.
+ */
 
 function sendAxiosQuery(url, data) {
     axios.post(url, data)
@@ -73,7 +76,10 @@ function hideOfflineWarning(){
     if (document.getElementById('offline_div')!=null)
         document.getElementById('offline_div').style.display='none';
 }
-
+/**
+ * A function designed to draw an image to a canvas, so that it can be converted to BASE64.
+ * @param input The image data.
+ */
 function readImage(input) {
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext("2d");
@@ -93,7 +99,11 @@ function readImage(input) {
     img.src = imgSrc;
 
 }
-
+/**
+ * This function is called when the form is submitted. The function prepares the data for submission to "/insert".
+ * The function also coverts the image into BASE64, so it can be stored in MongoDB/IDB.
+ * @param route
+ */
 function onSubmit(route) {
     var formArray = $("form").serializeArray();
     var data = {};
@@ -125,6 +135,11 @@ function onSubmit(route) {
     console.log(res);
     event.preventDefault();
 }
+
+/**
+ * A function used to ensure MongoDB and IndexedDB are equal.
+ *
+ */
 async function syncDatabase(){
     axios.get("/retrievedata").then(async (dataR) => {
         const Stories = dataR;
@@ -147,12 +162,17 @@ async function syncDatabase(){
         }
     });
 }
+
+/**
+ * This function generates the index to be displayed from the back-end.
+ */
 var storyI = 0;
 async function createStories() {
     var row = document.createElement('div')
     const getData = await getAllStoryData()
     console.log(getData)
     var story_len = getData.length
+    var counter = 0
 
     for (let story of getData) {
         console.log("TEST")
@@ -178,10 +198,14 @@ async function createStories() {
         story_image.style.objectFit = "cover"
         btn_with_image.className = "btnOnImage"
         image_btn.className = "imageBtn btn btn-light"
+        image_btn.id = counter
         image_btn.innerText = "Start Chat"
+        console.log(image_btn);
+
 
 
         story_image.src = story.img
+
         title_p.innerText = 'Title: ' + story.title
         console.log(story.title)
         short_text_p.innerText = 'Short Text: ' + story.shorttext
@@ -207,7 +231,28 @@ async function createStories() {
             document.getElementById("my_container").appendChild(row)
             break
         }
-
-        console.log(storyI)
+        counter = counter + 1
+    }
+    for (let x = 0; x < story_len; x++) {
+        console.log(document.getElementById(x));
+        document.getElementById(x).addEventListener('click', function() {
+            data = {}
+            data.title = getData[x].title;
+            data.shorttext = getData[x].shorttext;
+            data.authorname = getData[x].authorname;
+            data.dateofissue = getData[x].dateofissue;
+            data.img = getData[x].img;
+            axios.get("/chat", data)
+                .then((dataR) => {// no need to JSON parse the result, as we are using
+                    // we need to JSON stringify the object
+                    document.getElementById('results').innerHTML = JSON.stringify(dataR.data);
+                    console.log(dataR);
+                })
+                .then(window.location="/index")
+                .catch(function (response) {
+                    return response.toJSON();
+                })
+            //sendAxiosQuery("/chat", data);
+        });
     }
 }
