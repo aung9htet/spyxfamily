@@ -90,9 +90,9 @@ function initCanvas(sckt, imageUrl) {
 /**
  * called when it is required to draw the image on the canvas. We have resized the canvas to the same image size
  * so ti is simpler to draw later
- * @param img
- * @param canvas
- * @param ctx
+ * @param img       the image
+ * @param canvas    the canvas
+ * @param ctx       the canvas context
  */
 function drawImageScaled(img, canvas, ctx) {
     // get the scale
@@ -111,15 +111,15 @@ function drawImageScaled(img, canvas, ctx) {
  * this is called when we want to display what we (or any other connected via socket.io) draws on the canvas
  * note that as the remote provider can have a different canvas size (e.g. their browser window is larger)
  * we have to know what their canvas size is so to map the coordinates
- * @param ctx the canvas context
- * @param canvasWidth the originating canvas width
- * @param canvasHeight the originating canvas height
- * @param prevX the starting X coordinate
- * @param prevY the starting Y coordinate
- * @param currX the ending X coordinate
- * @param currY the ending Y coordinate
- * @param color of the line
- * @param thickness of the line
+ * @param ctx               the canvas context
+ * @param canvasWidth       the originating canvas width
+ * @param canvasHeight      the originating canvas height
+ * @param prevX             the starting X coordinate
+ * @param prevY             the starting Y coordinate
+ * @param currX             the ending X coordinate
+ * @param currY             the ending Y coordinate
+ * @param color             of the line
+ * @param thickness         of the line
  */
 function drawOnCanvas(ctx, canvasWidth, canvasHeight, prevX, prevY, currX, currY, color, thickness) {
     //get the ration between the current canvas and the one it has been used to draw on the other comuter

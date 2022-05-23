@@ -1,4 +1,12 @@
+/**
+ * The function is called on body
+ * The function will be used for initialising the indexDb for use
+ * The function will initiate the function to start the database synchronization between the MongoDb and the IndexDb
+ * The function will register the service workers for usage
+ * The function will be displaying the stories from the indexDb
+ */
 function initIndex() {
+    // initialise indexdb
     if ('indexedDB' in window) {
         initStoryDatabase()
             .then(response => console.log("Database initialised"))
@@ -6,6 +14,7 @@ function initIndex() {
     else {
         console.log('This browser doesn\'t support IndexedDB')
     }
+    // sync mongodb and index db
     syncDatabase()
     // initialise for service workers
     if ('serviceWorker' in navigator) {
@@ -39,8 +48,9 @@ function sendAxiosQuery(url, data) {
 }
 
 /**
- * When the client gets off-line, it shows an off line warning to the user
+ * When the client gets off-line, it shows an offline warning to the user
  * so that it is clear that the data is stale
+ * Makes the page ready for offline usage by disabling some features, i.e. to disable the button that lead to creating stories
  */
 window.addEventListener('offline', function(e) {
     // Queue up events for server.
@@ -50,8 +60,9 @@ window.addEventListener('offline', function(e) {
 }, false);
 
 /**
- * When the client gets off-line, it shows an off line warning to the user
+ * When the client gets off-line, it shows an offline warning to the user
  * so that it is clear that the data is stale
+ * Makes the page ready for offline usage by disabling some features, i.e. to disable the button that lead to creating stories
  */
 window.addEventListener('online', function(e) {
     // Queue up events for server.
@@ -61,6 +72,9 @@ window.addEventListener('online', function(e) {
     document.getElementById('creating_story').style.display = 'block';
 }, false);
 
+/**
+ * Notifies the user that it is now set to offline mode
+ */
 function showOfflineWarning(){
     if (document.getElementById('offline_div')!=null)
         document.getElementById('offline_div').style.display='block';
@@ -68,10 +82,14 @@ function showOfflineWarning(){
 
 }
 
+/**
+ * Notifies the user that it is available to use online now
+ */
 function hideOfflineWarning(){
     if (document.getElementById('offline_div')!=null)
         document.getElementById('offline_div').style.display='none';
 }
+
 /**
  * A function designed to draw an image to a canvas, so that it can be converted to BASE64.
  * @param input The image data.
@@ -133,8 +151,8 @@ function onSubmit(route) {
 }
 
 /**
- * A function used to ensure MongoDB and IndexedDB are equal.
- *
+ * The function checks if there is any discrepancy between the IndexDb and the MongoDb using the title of the stories
+ * The function will input data from the MongoDb into the IndexDb if there is anything missing
  */
 async function syncDatabase(){
     axios.get("/retrievedata").then(async (dataR) => {

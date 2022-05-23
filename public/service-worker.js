@@ -15,7 +15,6 @@ let filesToCache = [
     '/javascripts/chat.js',
     '/javascripts/database.js',
     '/javascripts/database_stories.js',
-    '/javascripts/idb/index.js',
     '/javascripts/index.js',
     '/javascripts/loadImage.js'
 ];
@@ -72,6 +71,9 @@ function promiseAny(promises){
     });
 };
 
+/**
+ * The function uses a stale-while-revalidate for dealing with the service workers
+ */
 self.addEventListener('fetch', function (e) {
     console.log('[Service Worker] Fetch', e.request.url);
     let dataUrl = e.request.clone()

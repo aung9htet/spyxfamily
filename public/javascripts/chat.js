@@ -69,20 +69,26 @@ function writeLoadedData(chatDetails){
 }
 
 /**
- * to rewrite for loaded data
+ * The function uses the params to set the image for the page, load the data from the indexdb to the chat function and to load the data of the knowledge graph onto the page
+ * @param roomNo room no of the client
+ * @param forceReload
+ * @returns {Promise<void>}
  */
 async function loadData(roomNo, forceReload) {
     // get chat data by name and currently set room id
     let chatData = await getChatData(roomNo)
     let imageData = await getImageData(roomNo)
     let annotationData = await getAnnotationData(roomNo)
+    // load image set for the page
     if (imageData) {
         setBackground(imageData.img);
     }
+    // load the chat data
     if (!forceReload && chatData && chatData.length > 0) {
         for (let chat of chatData)
             writeLoadedData(chat)
     }
+    // load the knowledge graph
     if (!forceReload && annotationData && annotationData.length > 0) {
         for (let annotation of annotationData) {
             showAnnotation(annotation.resultId, annotation.resultName, annotation.resultDescription, annotation.resultUrl, annotation.resultColor);
@@ -90,6 +96,10 @@ async function loadData(roomNo, forceReload) {
     }
 }
 
+/**
+ * the function draws the annotation data that has been saved into the annotation for the current room number of the client
+ * @returns {Promise<void>}
+ */
 async function loadDrawing(){
     let drawData = await getDrawData(roomNo)
     if (drawData && drawData.length > 0) {
@@ -99,6 +109,10 @@ async function loadDrawing(){
 }
 window.loadDrawing = loadDrawing;
 
+/**
+ * A function designed to draw an image to a canvas, so that it can be converted to BASE64.
+ * @param input The image data.
+ */
 function readImage(input) {
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext("2d");
@@ -120,8 +134,10 @@ function readImage(input) {
 }
 
 /**
- * When the client gets off-line, it shows an off line warning to the user
+ * When the client gets off-line, it shows an offline warning to the user
  * so that it is clear that the data is stale
+ * Makes the page ready for offline usage by disabling some features, i.e. to disable chat and knowledge graph function
+ * since knowledge requires internet and chat requires interaction between client
  */
 window.addEventListener('offline', function(e) {
     // Queue up events for server.
@@ -136,9 +152,9 @@ window.addEventListener('offline', function(e) {
 }, false);
 
 /**
- * When the client gets off-line, it shows an off line warning to the user
- * so that it is clear that the data is stale
- */
+ * When the client gets online, it shows an online warning to the user
+ * Features are re-enabled for the user to send chat and use/share knowledge graph
+ * */
 window.addEventListener('online', function(e) {
     // Queue up events for server.
     console.log("You are online");
@@ -154,6 +170,9 @@ window.addEventListener('online', function(e) {
     document.getElementById('chat_set').style.display = 'block';
 }, false);
 
+/**
+ * Notifies the user that it is now set to offline mode
+ */
 function showOfflineWarning(){
     if (document.getElementById('offline_div')!=null)
         document.getElementById('offline_div').style.display='block';
@@ -161,13 +180,17 @@ function showOfflineWarning(){
 
 }
 
+/**
+ * Notifies the user that it is available to use online now
+ */
 function hideOfflineWarning(){
     if (document.getElementById('offline_div')!=null)
         document.getElementById('offline_div').style.display='none';
 }
 
 /**
- * called to generate a random room number with 10 alphanumeric letters
+ * The function generates a random alpha-numeric string of length 10
+ * This will be used to call upon for usage in generating the roomId
  */
 function generateRoom() {
     roomNo = (Math.random() * 1000000000000000000).toString(36).substring(0,10);
@@ -175,8 +198,8 @@ function generateRoom() {
 }
 
 /**
- * called when the Send button is pressed. It gets the text to send from the interface
- * and sends the message via  socket
+ * The function is used for emitting the chat messages when the user has pressed the send button
+ * The function will also be recording the message details in the indexDb to recall them on re-load and for offline function
  */
 function sendChatText() {
     let chatText = document.getElementById('chat_input').value;
@@ -188,17 +211,19 @@ function sendChatText() {
 }
 
 /**
- * Store and emit drawing data
- * @param x
- * @param y
- * @param x_1
- * @param y_1
- * @param x_2
- * @param y_2
- * @param painting
- * @param color
- * @param line
- * @param mode
+ * The function stores the drawing data into the indexDb
+ * The function emits the drawing data so this can be data can be shared to the other clients
+ * @param x x coordinate of the mouse position for the normal drawing
+ * @param {int}     x          x coordinate of the mouse position for the normal drawing
+ * @param {int}     y          y coordinate of the mouse position for the normal drawing
+ * @param {int}     x1         x1 coordinate of the mouse position for the square drawing
+ * @param {int}     y1         y1 coordinate of the mouse position for the square drawing
+ * @param {int}     x2         x2 coordinate of the mouse position for the square drawing
+ * @param {int}     y2         y2 coordinate of the mouse position for the square drawing
+ * @param {boolean} painting   check if the user is currently drawing
+ * @param {color}   color      get the color that user used for drawing
+ * @param {int}     line       get the line width that user used for drawing
+ * @param {string}  mode       determine if the user is currently using knowledge graph mode or normal drawing mode
  */
 function sendDrawingData(x, y, x_1, y_1, x_2, y_2, painting, color, line, mode){
     // store data being drawn then emit
@@ -210,12 +235,13 @@ function sendDrawingData(x, y, x_1, y_1, x_2, y_2, painting, color, line, mode){
 window.sendDrawingData = sendDrawingData;
 
 /**
- * Store and emit annotation data
- * @param resultId
- * @param resultName
- * @param resultDescription
- * @param resultUrl
- * @param resultColor
+ * The function stores the knowledge graph data into the indexDb
+ * The function emits the knowledge graph data so this can be data can be shared to the other clients
+ * @param   {String}    resultId                    id of the result selected
+ * @param   {String}    resultName                  title of the result
+ * @param   {String}    resultDescription           short description of the result
+ * @param   {URL}       resultUrl                   link to the results
+ * @param   {Color}     resultColor                 the annotation color that is related to the knowledge graph
  */
 function sendAnnotationData(resultId, resultName, resultDescription, resultUrl, resultColor){
     // store data being drawn then emit
@@ -227,7 +253,8 @@ function sendAnnotationData(resultId, resultName, resultDescription, resultUrl, 
 window.sendAnnotationData = sendAnnotationData;
 
 /**
- * check if room id is in correct format
+ * The function checks whether the format of the roomId is correct
+ * Used if the user decides to input their own roomId for joining/creating
  */
 function checkRoomId(roomId) {
     if (roomId.length == 10) {
@@ -248,8 +275,9 @@ function checkRoomId(roomId) {
 }
 
 /**
- * used to connect to a room. It gets the name and room id from the
- * interface
+ * The function is used to connect to a room and set variables(image, name, roomId) that may be necessary for the room
+ * The function creates a random name if the user has not set their own name
+ * The function checks if the roomId is value or not
  */
 function connectToRoom() {
     roomNo = document.getElementById('roomNo').value;
@@ -278,8 +306,8 @@ function connectToRoom() {
 }
 
 /**
- * it appends the given html text to the history div
- * this is to be called when the socket receives the chat message (socket.on ('message'...)
+ * It appends the given html text to the history div
+ * This is to be called when the socket receives the chat message (socket.on ('message'...)
  * @param text: the text to append
  */
 function writeOnChatHistory(text) {
@@ -293,19 +321,6 @@ function writeOnChatHistory(text) {
     document.getElementById('chat_input').value = '';
 }
 
-async function syncDatabase(){
-    let Story = require('../models/stories');
-    const Stories = Story.getAll()
-    console.log("Syncing...")
-    for (let story of Stories){
-        if (getStoryData(story.id) !== null){
-            storeStoryData(story.title, {title: story.title, shorttext: story.short_text, authorname: story.author_name, dateofissue: story.date_of_issue})
-            storeStoryImg(story.title, {img: story.img})
-            console.log("Added story during sync")
-        }
-    }
-    console.log("Story Synced!")
-}
 /**
  * it hides the initial form and shows the chat
  * @param room the selected room

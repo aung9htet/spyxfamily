@@ -283,11 +283,11 @@ function selectItem(event){
 
 /**
  * Display stored annotation
- * @param   {String}    resultId
- * @param   {String}    resultName
- * @param   {String}    resultDescription
- * @param   {URL}       resultUrl
- * @param   {Color}     resultColor
+ * @param   {String}    resultId                    id of the result selected
+ * @param   {String}    resultName                  title of the result
+ * @param   {String}    resultDescription           short description of the result
+ * @param   {URL}       resultUrl                   link to the results
+ * @param   {Color}     resultColor                 the annotation color that is related to the knowledge graph
  */
 function showAnnotation(resultId, resultName, resultDescription, resultUrl, resultColor){
     console.log(resultId, resultName, resultDescription, resultUrl, resultColor);
