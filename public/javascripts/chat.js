@@ -128,7 +128,11 @@ window.addEventListener('offline', function(e) {
     console.log("You are offline");
     showOfflineWarning();
     online_status = false;
-    document.getElementById('input').style.display = 'none';
+    // knowledge graph
+    document.getElementById('typeForm').style.display = 'none';
+    document.getElementById('widget').style.display = 'none';
+    // chat
+    document.getElementById('chat_input').style.display = 'none';
 }, false);
 
 /**
@@ -144,7 +148,10 @@ window.addEventListener('online', function(e) {
     syncDatabase()
         .then(response => console.log("Data inserted"))
         .catch(error => console.log('error inserting: ' + + JSON.stringify(error)))
-    document.getElementById('input').style.display = 'block';
+    // knowledge graph
+    document.getElementById('typeForm').style.display = 'block';
+    // chat
+    document.getElementById('chat_input').style.display = 'block';
 }, false);
 
 function showOfflineWarning(){

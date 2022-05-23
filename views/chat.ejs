@@ -123,7 +123,7 @@
         <div class="col-3 col-md-3">
             <p class="text-center"><button id="switchMode" class="btn btn-danger btn-block">Switch to Knowledge Graph Mode</button></p>
             <div class="myRow" id="typeForm" style="display: none">
-                <div class="input-group">
+                <div id="searching" class="input-group">
                     <label for="myType" class="input-group-text input-group-prepend">Type: </label>
                     <input class="form-control" type="text" id="myType">
                     <div class="input-group-append">
@@ -155,8 +155,8 @@
                     <div id="history" style="height: 35vh" class="boxed scrolling" ></div>
                     <div id="input" style="height: 5vh" class=" boxed message" class="my-message">
                     </div>
-                    <form onsubmit="return false;" style="width: 100%">
-                        <div class="input-group">
+                    <form onsubmit="return false;" style="width: 100%" id="chat_input">
+                        <div class="input-group" >
                             <div class="input-group-prepend">
                                 <label class="input-group-text" for="name"> chat: </label>
                             </div>

@@ -47,6 +47,7 @@ window.addEventListener('offline', function(e) {
     // Queue up events for server.
     console.log("You are offline");
     showOfflineWarning();
+    document.getElementById('creating_story').style.display = 'none';
 }, false);
 
 /**
@@ -58,6 +59,7 @@ window.addEventListener('online', function(e) {
     console.log("You are online");
     alert("You are online");
     hideOfflineWarning();
+    document.getElementById('creating_story').style.display = 'block';
 }, false);
 
 function showOfflineWarning(){
@@ -162,6 +164,9 @@ async function createStories() {
         var author_name_p = document.createElement('div')
         var story_p = document.createElement('div')
         var story_image = document.createElement('img')
+        var btn_with_image = document.createElement('div')
+        var image_btn = document.createElement('button')
+
 
         row.className = "row justify-content-md-center"
         col.className = "col"
@@ -171,6 +176,10 @@ async function createStories() {
         story_image.style.width = "300px"
         story_image.style.height = "300px"
         story_image.style.objectFit = "cover"
+        btn_with_image.className = "btnOnImage"
+        image_btn.className = "imageBtn btn btn-light"
+        image_btn.innerText = "Start Chat"
+
 
         story_image.src = story.img
         title_p.innerText = 'Title: ' + story.title
@@ -182,7 +191,9 @@ async function createStories() {
         card_body.appendChild(short_text_p)
         card_body.appendChild(author_name_p)
         card_body.appendChild(story_p)
-        card.appendChild(story_image)
+        btn_with_image.appendChild(story_image)
+        btn_with_image.appendChild(image_btn)
+        card.appendChild(btn_with_image)
         card.appendChild(card_body)
         col.appendChild(card)
 
