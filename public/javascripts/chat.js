@@ -23,10 +23,6 @@ function init() {
     initChatSocket()
 }
 
-function initTwo() {
-    document.body.innerHTML = ""
-}
-
 /**
  * initialises the socket and indexdb for chat, draw, annotations
  */

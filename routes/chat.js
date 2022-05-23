@@ -8,14 +8,5 @@ router.get('/chat', function(req, res, next) {
   res.render('chat', { title: 'Image Browsing' });
 });
 
-router.post('/chat', function(req, res, next) {
-  // const myPromise = new Promise((resolve, reject) => {
-  //   story.insert(req, res);
-  // });
-  // myPromise.then(res.redirect("/index"));
-  console.log(req.body);
-  res.render('chat', {data: req.body});
-
-});
 
 module.exports = router;
