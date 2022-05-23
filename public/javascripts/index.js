@@ -9,16 +9,12 @@ function initIndex() {
     syncDatabase()
     // initialise for service workers
     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function(){
-            navigator.serviceWorker.register('./service-worker.js')
-                .then(function(registration) {
-                    // registration successful
-                    console.log('Service Worker Registered', registration.scope);
-                }, function(err){
-                    // registration failed
-                    console.log('Service Worker Registration failed: ', err);
-                });
-        });}
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(function () {
+                // registration successful
+                console.log('Service Worker Registered');
+            });
+    }
     createStories()
 }
 
