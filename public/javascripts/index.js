@@ -185,7 +185,6 @@ async function createStories() {
         var story_p = document.createElement('div')
         var story_image = document.createElement('img')
         var btn_with_image = document.createElement('div')
-        var image_btn = document.createElement('button')
 
 
         row.className = "row justify-content-md-center"
@@ -197,10 +196,7 @@ async function createStories() {
         story_image.style.height = "300px"
         story_image.style.objectFit = "cover"
         btn_with_image.className = "btnOnImage"
-        image_btn.className = "imageBtn btn btn-light"
-        image_btn.id = counter
-        image_btn.innerText = "Start Chat"
-        console.log(image_btn);
+
 
 
 
@@ -216,7 +212,6 @@ async function createStories() {
         card_body.appendChild(author_name_p)
         card_body.appendChild(story_p)
         btn_with_image.appendChild(story_image)
-        btn_with_image.appendChild(image_btn)
         card.appendChild(btn_with_image)
         card.appendChild(card_body)
         col.appendChild(card)
@@ -232,27 +227,5 @@ async function createStories() {
             break
         }
         counter = counter + 1
-    }
-    for (let x = 0; x < story_len; x++) {
-        console.log(document.getElementById(x));
-        document.getElementById(x).addEventListener('click', function() {
-            data = {}
-            data.title = getData[x].title;
-            data.shorttext = getData[x].shorttext;
-            data.authorname = getData[x].authorname;
-            data.dateofissue = getData[x].dateofissue;
-            data.img = getData[x].img;
-            axios.get("/chat", data)
-                .then((dataR) => {// no need to JSON parse the result, as we are using
-                    // we need to JSON stringify the object
-                    document.getElementById('results').innerHTML = JSON.stringify(dataR.data);
-                    console.log(dataR);
-                })
-                .then(window.location="/index")
-                .catch(function (response) {
-                    return response.toJSON();
-                })
-            //sendAxiosQuery("/chat", data);
-        });
     }
 }
