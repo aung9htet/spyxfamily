@@ -7,7 +7,7 @@ var bodyParser = require("body-parser");
 var fs = require('fs');
 const axios = require('axios').default;
 const swaggerUi = require('swagger-ui-express');
-const openApiDocumentation = require('./swagger/swaggerDocumentation.json');
+const openApiDocumentation = require('./Documentation/swaggerDocumentation.json');
 
 
 
