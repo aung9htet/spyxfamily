@@ -1,5 +1,11 @@
 let Story = require('../models/stories');
 
+/**
+ * A helper function for posting to a URL.
+ * @param url The target URL of the axios query.
+ * @param data The data to be POSTED to the url.
+ * @return The response from the server.
+ */
 function sendAxiosQuery(url, data) {
     axios.post(url, data)
         .then((dataR) => {// no need to JSON parse the result, as we are using
@@ -12,6 +18,11 @@ function sendAxiosQuery(url, data) {
         })
 }
 
+/**
+ * A function for receiving every entry in the Story MongoDB.
+ * @param req
+ * @param res
+ */
 exports.getAll = function (req, res) {
     console.log("Hello")
     Story.find({})
@@ -22,7 +33,11 @@ exports.getAll = function (req, res) {
             res.status(500).send('Invalid data or not found!' + JSON.stringify(err));
         });
 }
-
+/**
+ * A function for inserting a new story into MongoDB.
+ * @param req
+ * @param res
+ */
 exports.insert = function (req, res) {
     let userData = req.body;
     if (userData == null)
