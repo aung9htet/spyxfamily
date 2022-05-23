@@ -1,3 +1,8 @@
+/**
+ *  Sets the background of a canvas.
+ *  The background will be loaded according to the room number.
+ * @param   {String}    image     the image to draw on the canvas
+ */
 function setBackground(image) {
     var canvas = document.getElementById('my_canvas');
     console.log(canvas);
@@ -52,21 +57,36 @@ var y1;
 var x2;
 var y2;
 
+/**
+ *  Declare boolean value painting false if the user has done painting.
+ *  Draw the rectangle if it is knowledge graph mode.
+ */
 function stopPainting() {
     painting = false;
     if(knowledgeGraph.innerText === "Switch to Draw Mode") {
-        rectDraw()
+        rectDraw();
     }
 }
 
-function startPainting(e) {
+/**
+ *  Declare boolean value painting true if the user has started painting.
+ * @param {event}   event   mouse event
+ */
+function startPainting(event) {
     painting = true;
     if(knowledgeGraph.innerText === "Switch to Draw Mode") {
-        x1 = e.offsetX;
-        y1 = e.offsetY;
+        x1 = event.offsetX;
+        y1 = event.offsetY;
     }
 }
 
+/**
+ *  Track the mouse position and draw it on the canvas is it is drawing mode.
+ *  Track the mouse position and store the starting point and end point to draw the rectangle if it is
+ *  knowledge graph mode.
+ *  Send the tracked data to pass the socket.io and store it in indexedDB.
+ * @param {event}   event   mouse event
+ */
 function onMouseMove(event) {
     const x = event.offsetX;
     const y = event.offsetY;
@@ -88,6 +108,20 @@ function onMouseMove(event) {
     sendDrawingData(x, y, x1, y1, x2, y2, painting, saved_color, context.lineWidth, knowledgeGraph.innerText)
 }
 
+/**
+ * Draw on the canvas using a mouse.
+ *
+ * @param {int}     draw_x          x coordinate of the mouse position for the normal drawing
+ * @param {int}     draw_y          y coordinate of the mouse position for the normal drawing
+ * @param {int}     draw_x1         x1 coordinate of the mouse position for the square drawing
+ * @param {int}     draw_y1         y1 coordinate of the mouse position for the square drawing
+ * @param {int}     draw_x2         x2 coordinate of the mouse position for the square drawing
+ * @param {int}     draw_y2         y2 coordinate of the mouse position for the square drawing
+ * @param {boolean} painting        check if the user is currently drawing
+ * @param {color}   passed_color    get the color that user used for drawing
+ * @param {int}     line_width      get the line width that user used for drawing
+ * @param {string}  mode            determine if the user is currently using knowledge graph mode or normal drawing mode
+ */
 function onMouseMoveRedraw(draw_x, draw_y, draw_x1, draw_y1, draw_x2, draw_y2, painting, passed_color, line_width, mode) {
     const x = draw_x;
     const y = draw_y;
@@ -129,10 +163,17 @@ function onMouseMoveRedraw(draw_x, draw_y, draw_x1, draw_y1, draw_x2, draw_y2, p
 }
 window.onMouseMoveRedraw = onMouseMoveRedraw;
 
+/**
+ *  Draw the rectangle on the canvas.
+ */
 function rectDraw() {
     context.strokeRect(x1, y1, (x2 - x1), (y2 - y1));
 }
 
+/**
+ * Change the color if the color button from the palette has clicked.
+ * @param {event}   event   mouse event
+ */
 function handleColorClick(event) {
     const color = event.target.style.backgroundColor;
     saved_color = color
@@ -141,11 +182,18 @@ function handleColorClick(event) {
     document.getElementById('currentColor').style.backgroundColor= color;
 }
 
+/**
+ * Change the line width if the line width input has changed.
+ * @param {event}   event   mouse event
+ */
 function handleRangeChange(event) {
     const size = event.target.value;
     context.lineWidth = size;
 }
 
+/**
+ * Change the drawing mode if the mode change button has clicked.
+ */
 function handleModeClick() {
     if (knowledgeGraph.innerText === "Switch to Knowledge Graph Mode") {
         knowledgeGraph.innerText = "Switch to Draw Mode";
@@ -157,9 +205,11 @@ function handleModeClick() {
     }
 }
 
-//To prevent right click
-
-function handleCM(event) {
+/**
+ * To prevent right click from mouse
+ * @param {event}   event   mouse event
+ */
+function preventRC(event) {
     event.preventDefault();
 }
 
@@ -168,25 +218,24 @@ if (canvas) {
     canvas.addEventListener("mousedown", startPainting);
     canvas.addEventListener("mouseup", stopPainting);
     canvas.addEventListener("mouseleave", stopPainting);
-    canvas.addEventListener("contextmenu", handleCM);
+    canvas.addEventListener("contextmenu", preventRC);
 }
 
+// Color buttons
 Array.from(colors).forEach(color =>
     color.addEventListener("click", handleColorClick));
 
-
+// Line width (range)
 if(range) {
     range.addEventListener("input", handleRangeChange);
 }
 
 // Annotation mode
-
 if(knowledgeGraph){
     knowledgeGraph.addEventListener("click", handleModeClick);
 }
 
-/// Knowledge Graph ------------------------------------------------
-
+/// Knowledge Graph Section------------------------------------------------>
 
 const service_url = 'https://kgsearch.googleapis.com/v1/entities:search';
 const apiKey= 'AIzaSyAG7w627q-djB4gTTahssufwNOImRqdYKM';
@@ -233,12 +282,12 @@ function selectItem(event){
 }
 
 /**
- * Display annotation (To be fix to allow multiple displays)
- * @param resultId
- * @param resultName
- * @param resultDescription
- * @param resultUrl
- * @param resultColor
+ * Display stored annotation
+ * @param   {String}    resultId
+ * @param   {String}    resultName
+ * @param   {String}    resultDescription
+ * @param   {URL}       resultUrl
+ * @param   {Color}     resultColor
  */
 
 function showAnnotation(resultId, resultName, resultDescription, resultUrl, resultColor){
