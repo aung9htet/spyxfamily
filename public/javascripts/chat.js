@@ -141,6 +141,9 @@ window.addEventListener('online', function(e) {
     alert("You are online");
     hideOfflineWarning();
     online_status = true;
+    syncDatabase()
+        .then(response => console.log("Data inserted"))
+        .catch(error => console.log('error inserting: ' + + JSON.stringify(error)))
     document.getElementById('input').style.display = 'block';
 }, false);
 
@@ -281,6 +284,20 @@ function writeOnChatHistory(text) {
     // scroll to the last element
     history.scrollTop = history.scrollHeight;
     document.getElementById('chat_input').value = '';
+}
+
+async function syncDatabase(){
+    let Story = require('../models/stories');
+    const Stories = Story.getAll()
+    console.log("Syncing...")
+    for (let story of Stories){
+        if (getStoryData(story.id) !== null){
+            storeStoryData(story.title, {title: story.title, shorttext: story.short_text, authorname: story.author_name, dateofissue: story.date_of_issue})
+            storeStoryImg(story.title, {img: story.img})
+            console.log("Added story during sync")
+        }
+    }
+    console.log("Story Synced!")
 }
 /**
  * it hides the initial form and shows the chat

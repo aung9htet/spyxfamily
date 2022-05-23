@@ -5,6 +5,7 @@ let db = NaN;
 const STORY_DB_NAME= 'db_story';
 const STORY_STORE_NAME= 'story_storage';
 
+
 /**
  * it inits the database and creates an index for the chat field
  */
@@ -60,7 +61,41 @@ window.storeStoryData= storeStoryData;
  * @param roomId
  * @returns objects like {name, text}
  */
-async function getStoryData() {
+async function getStoryData(title) {
+    // check if db exists or not
+    if (!db)
+        await initStoryDatabase();
+    if (db) {
+        // fetch database info
+        try {
+            console.log('fetching: ' + title);
+            let tx = await db.transaction(STORY_STORE_NAME, 'readonly');
+            let store = await tx.objectStore(STORY_STORE_NAME);
+            // get selected item
+            let index = await store.index('title');
+            let storyList = await index.getAll(IDBKeyRange.only(title));
+            await tx.complete;
+            let msg = [];
+            // processing and send chat message
+            if (storyList && storyList.length > 0) {
+                for (let elem of storyList) {
+                    msg.push(elem);
+                }
+            }
+            return msg
+        } catch (error) {
+            console.log(error);
+        }
+    }
+}
+window.getStoryData= getStoryData;
+
+/**
+ * it retrieves all the chat data for a chatroom from the database
+ * @param roomId
+ * @returns objects like {name, text}
+ */
+async function getAllStoryData() {
     // check if db exists or not
     if (!db)
         await initStoryDatabase();
@@ -70,7 +105,7 @@ async function getStoryData() {
             console.log('fetching: ');
             let tx = await db.transaction(STORY_STORE_NAME, 'readonly');
             let store = await tx.objectStore(STORY_STORE_NAME);
-            // set specific item to get from
+            // get all items
             let storyList = await store.getAll();
             await tx.complete;
             let msg = [];
@@ -79,25 +114,11 @@ async function getStoryData() {
                 for (let elem of storyList) {
                     msg.push(elem);
                 }
-                return msg;
-            } else {
-                // if the database is not supported, we use localstorage
-                const value = localStorage.getAll();
-                if (value == null)
-                    return msg;
-                else msg.push(value);
-                return msg;
             }
+            return msg
         } catch (error) {
             console.log(error);
         }
-    } else {
-        const value = localStorage.getAll();
-        let msg = []
-        if (value == null)
-            return msg;
-        else msg.push(value);
-        return msg;
     }
 }
-window.getStoryData= getStoryData;
+window.getAllStoryData= getAllStoryData;

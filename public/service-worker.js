@@ -2,13 +2,22 @@ let dataCacheName = 'chat-cache-v1';
 let cacheName = 'chatPWA';
 let filesToCache = [
     '/',
+    '/javascripts/idb/index.js',
     '/stylesheets/style.css',
+    '/stylesheets/bootstrap.css',
+    '/stylesheets/bootstrap-grid.css',
+    '/stylesheets/bootstrap-reboot.css',
+    '/stylesheets/reset.css',
+    '/javascripts/annotation.js',
+    '/javascripts/bootstrap.bundle.js',
+    '/javascripts/bootstrap.js',
+    '/javascripts/canvas.js',
     '/javascripts/chat.js',
     '/javascripts/database.js',
-    '/javascripts/idb/index.js',
     '/javascripts/database_stories.js',
+    '/javascripts/idb/index.js',
     '/javascripts/index.js',
-    '/javascripts/canvas.js'
+    '/javascripts/loadImage.js'
 ];
 
 /**

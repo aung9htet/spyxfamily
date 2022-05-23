@@ -15,12 +15,9 @@ router.get('/', (req, res) => {
 
 router.get('/index',(req,res,next) =>{
   //Here fetch data using mongoose query like
-  Story.find({}, function(err, stories) {
-    if (err) throw err;
-    // object of all the users
-    console.log(stories)
-    res.render('index2',{stories:stories});
-  })});
+  // object of all the users
+  res.render('index2');
+  });
 /* GET home page. */
 
 /*router.get('/index', function(req, res, next) {
@@ -31,6 +28,13 @@ router.get('/index',(req,res,next) =>{
 router.get('/insert', function(req, res, next) {
   res.render('insert', { title: 'My Form' });
 });
+
+router.get('/retrievedata', function(req, res, mnext){
+  Story.find({}, function(err, stories) {
+    if (err) throw err;
+    res.send(stories);
+  })
+})
 
 router.post('/insert', function(req, res, next) {
   // const myPromise = new Promise((resolve, reject) => {
