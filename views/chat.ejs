@@ -74,10 +74,10 @@
 <div class="container-fluid pt-5 pl-5 pr-5" id="container_interface" style="display:none">
     <div class="row">
         <div class="col-6 col-md-6" id="canvas_interface" style="display:none" >
-            <div class="card" id="canvas_col">
+            <div class="card" id="canvas_col" style="overflow: auto;">
                 <img id="img" style="display: none" alt="your image" />
                 <img id="image" height="100%" >
-                <canvas id="my_canvas" ></canvas>
+                <canvas id="my_canvas" style="overflow: auto; min-height: 600px; max-height: 600px; min-width: 850px; max-width: 850px;"></canvas>
                 <div class="controls">
                     <div class="lineWidth input-group mb-3 justify-content-center">
                         <label class="input-group-prepend input-group-text mr-3">-</label>

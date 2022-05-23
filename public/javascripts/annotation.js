@@ -289,7 +289,6 @@ function selectItem(event){
  * @param   {URL}       resultUrl
  * @param   {Color}     resultColor
  */
-
 function showAnnotation(resultId, resultName, resultDescription, resultUrl, resultColor){
     console.log(resultId, resultName, resultDescription, resultUrl, resultColor);
 
