@@ -1,0 +1,97 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "API Title",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:3000/",
+      "description": "The main server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "Simply redirects to /index"
+      }
+    },
+    "/index": {
+      "get": {
+        "description": "Displays a list of all the stories.",
+        "operationId": "getStories",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Story"
+                }
+              }
+
+            }
+
+          }
+        }
+      }
+    },
+    "/insert": {
+      "get": {
+        "description": "Displays a form for the user to make a new story."
+      },
+      "post": {
+        "description": "Posts the story to MongoDB for it to be added.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Story"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat": {
+      "get": {
+        "description": "Displays the chat interface."
+      }
+
+    }
+  },
+  "components": {
+    "schemas": {
+      "Story": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The title of the story.",
+            "example": "Mick Jagger Concert"
+          },
+          "short_text": {
+            "type": "string",
+            "description": "A short description for the story.",
+            "example": "The singer was rumoured to be making use of drug type A and therefore we investigate thoroughly. We went to six gigs and had a lot of fun but found nothing."
+          },
+          "author_name": {
+            "type": "string",
+            "description": "The name of the author.",
+            "example": "Mark Twain"
+          },
+          "date_of_issue": {
+            "type": "string",
+            "description": "The date of issue.",
+            "example": "2017-07-21"
+          },
+          "image": {
+            "type": "string",
+            "description": "An image in Base64 format.",
+            "example": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABTIA…kIAEJSEACEpCABAYR+B9HHpJ8PqayRwAAAABJRU5ErkJggg=="
+          }
+        }
+      }
+    }
+  }
+}

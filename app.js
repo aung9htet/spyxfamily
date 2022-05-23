@@ -6,6 +6,8 @@ var logger = require('morgan');
 var bodyParser = require("body-parser");
 var fs = require('fs');
 const axios = require('axios').default;
+const swaggerUi = require('swagger-ui-express');
+const openApiDocumentation = require('./swagger/swaggerDocumentation.json');
 
 
 
@@ -14,6 +16,9 @@ var chatRouter = require('./routes/chat');
 var usersRouter = require('./routes/users');
 
 var app = express();
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocumentation));
+
 
 app.use(bodyParser.json({
   limit: '50mb'
